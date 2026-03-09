@@ -4,394 +4,430 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>PicklePro</title>
+
+  <!-- PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PicklePro" />
+  <meta name="theme-color" content="#007AFF" />
+  <link rel="manifest" href="manifest.json" />
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
   <style>
-    /* ───────────────────────────── RESET & ROOT ───────────────────────────── */
+    /* ═══════════════════════════ RESET & ROOT ═══════════════════════════ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:          #F2F2F7;
-      --card:        #FFFFFF;
-      --card2:       #F9F9FB;
-      --sep:         #E5E5EA;
-      --blue:        #007AFF;
-      --blue-light:  #E8F2FF;
-      --green:       #34C759;
-      --orange:      #FF9500;
-      --red:         #FF3B30;
-      --purple:      #AF52DE;
-      --teal:        #5AC8FA;
-      --label:       #1C1C1E;
-      --label2:      #3A3A3C;
-      --label3:      #636366;
-      --label4:      #8E8E93;
-      --radius:      16px;
-      --radius-sm:   10px;
-      --shadow:      0 2px 20px rgba(0,0,0,.08);
-      --shadow-md:   0 4px 30px rgba(0,0,0,.12);
-      --tab-h:       82px;
-      --header-h:    56px;
+      --bg:#F2F2F7; --card:#FFFFFF; --card2:#F9F9FB; --sep:#E5E5EA;
+      --blue:#007AFF; --blue-light:#E8F2FF; --blue-dark:#0062CC;
+      --green:#34C759; --orange:#FF9500; --red:#FF3B30; --purple:#AF52DE; --teal:#5AC8FA;
+      --label:#1C1C1E; --label2:#3A3A3C; --label3:#636366; --label4:#8E8E93;
+      --radius:16px; --radius-sm:10px; --shadow:0 2px 20px rgba(0,0,0,.08);
+      --shadow-md:0 4px 30px rgba(0,0,0,.12); --tab-h:82px; --header-h:56px;
     }
+    html,body { height:100%; background:var(--bg); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; color:var(--label); }
 
-    html, body { height: 100%; background: var(--bg); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--label); }
+    /* ═══════════════════════════ LAYOUT ═══════════════════════════ */
+    #app { display:flex; flex-direction:column; height:100vh; max-width:430px; margin:0 auto; position:relative; overflow:hidden; box-shadow:0 0 40px rgba(0,0,0,.18); background:var(--bg); }
 
-    /* ───────────────────────────── LAYOUT ─────────────────────────────────── */
-    #app { display: flex; flex-direction: column; height: 100vh; max-width: 430px; margin: 0 auto; position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,.18); background: var(--bg); }
+    .app-header { height:var(--header-h); background:rgba(255,255,255,.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid var(--sep); display:flex; align-items:flex-end; justify-content:center; padding-bottom:10px; flex-shrink:0; position:relative; z-index:100; }
+    .app-header h1 { font-size:17px; font-weight:700; letter-spacing:-.2px; }
+    .header-badge { background:var(--blue); color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:20px; margin-left:7px; }
 
-    /* ─── HEADER ─── */
-    .app-header {
-      height: var(--header-h);
-      background: rgba(255,255,255,.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--sep);
-      display: flex; align-items: flex-end; justify-content: center;
-      padding-bottom: 10px;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 100;
-    }
-    .app-header h1 { font-size: 17px; font-weight: 700; letter-spacing: -.2px; color: var(--label); }
-    .header-badge { background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 7px; letter-spacing: .3px; }
+    .screen { display:none; flex:1; overflow-y:auto; overflow-x:hidden; padding-bottom:calc(var(--tab-h)+10px); -webkit-overflow-scrolling:touch; }
+    .screen.active { display:block; }
+    #screen-map { display:none; flex-direction:column; padding-bottom:0; }
+    #screen-map.active { display:flex; }
+    #screen-bookings { padding-top:6px; }
 
-    /* ─── SCREENS ─── */
-    .screen { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: calc(var(--tab-h) + 10px); -webkit-overflow-scrolling: touch; }
-    .screen.active { display: block; }
+    .tab-bar { height:var(--tab-h); background:rgba(255,255,255,.9); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--sep); display:flex; align-items:flex-start; justify-content:space-around; padding-top:10px; flex-shrink:0; z-index:100; }
+    .tab-btn { display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:4px 6px; color:var(--label4); transition:color .2s; flex:1; }
+    .tab-btn.active { color:var(--blue); }
+    .tab-btn svg { width:24px; height:24px; }
+    .tab-btn span { font-size:10px; font-weight:600; }
 
-    /* ─── TAB BAR ─── */
-    .tab-bar {
-      height: var(--tab-h);
-      background: rgba(255,255,255,.9);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--sep);
-      display: flex; align-items: flex-start; justify-content: space-around;
-      padding-top: 10px;
-      flex-shrink: 0;
-      position: relative; z-index: 100;
-    }
-    .tab-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; padding: 4px 10px; color: var(--label4); transition: color .2s; flex: 1; }
-    .tab-btn.active { color: var(--blue); }
-    .tab-btn svg { width: 26px; height: 26px; }
-    .tab-btn span { font-size: 10px; font-weight: 600; letter-spacing: -.1px; }
+    /* ═══════════════════════════ TYPOGRAPHY ═══════════════════════════ */
+    .section-header { padding:20px 16px 6px; font-size:20px; font-weight:800; letter-spacing:-.4px; }
+    .section-sub { padding:0 16px 12px; font-size:14px; color:var(--label4); }
 
-    /* ─── TYPOGRAPHY HELPERS ─── */
-    .section-header { padding: 20px 16px 6px; font-size: 20px; font-weight: 800; letter-spacing: -.4px; color: var(--label); }
-    .section-sub    { padding: 0 16px 12px; font-size: 14px; color: var(--label4); }
+    /* ═══════════════════════════ HOME ═══════════════════════════ */
+    #screen-home { padding-top:6px; }
+    .hero-banner { margin:12px 16px; border-radius:var(--radius); background:linear-gradient(135deg,#007AFF,#5AC8FA); padding:22px 20px; color:#fff; position:relative; overflow:hidden; box-shadow:0 4px 24px rgba(0,122,255,.35); }
+    .hero-banner::after { content:"🏓"; font-size:80px; position:absolute; right:-10px; bottom:-14px; opacity:.35; line-height:1; }
+    .hero-banner h2 { font-size:22px; font-weight:800; letter-spacing:-.4px; }
+    .hero-banner p  { font-size:13px; opacity:.85; margin-top:4px; line-height:1.5; }
+    .hero-btn { margin-top:14px; background:rgba(255,255,255,.22); color:#fff; border:1.5px solid rgba(255,255,255,.55); border-radius:30px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; display:inline-block; transition:background .2s; }
 
-    /* ─── CARDS ─── */
-    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-    .card-inset { background: var(--card2); border-radius: var(--radius-sm); }
+    .quick-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:0 16px 16px; }
+    .qa-card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px; cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .qa-card:active { transform:scale(.97); box-shadow:none; }
+    .qa-icon  { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+    .qa-title { font-size:14px; font-weight:700; }
+    .qa-desc  { font-size:12px; color:var(--label4); line-height:1.4; }
 
-    /* ══════════════════════════════════════════════════════
-       SCREEN 1 — HOME
-    ══════════════════════════════════════════════════════ */
-    #screen-home { padding-top: 6px; }
+    .stat-row  { display:flex; gap:10px; margin:0 16px 16px; }
+    .stat-card { flex:1; background:var(--card); border-radius:var(--radius); padding:14px 12px; box-shadow:var(--shadow); text-align:center; }
+    .stat-val  { font-size:26px; font-weight:800; color:var(--blue); line-height:1; }
+    .stat-lbl  { font-size:11px; color:var(--label4); margin-top:4px; font-weight:500; }
 
-    .hero-banner {
-      margin: 12px 16px;
-      border-radius: var(--radius);
-      background: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
-      padding: 22px 20px;
-      color: #fff;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 24px rgba(0,122,255,.35);
-    }
-    .hero-banner::after {
-      content: "🏓";
-      font-size: 80px;
-      position: absolute;
-      right: -10px; bottom: -14px;
-      opacity: .35;
-      line-height: 1;
-    }
-    .hero-banner h2 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
-    .hero-banner p  { font-size: 13px; opacity: .85; margin-top: 4px; line-height: 1.5; }
-    .hero-btn { margin-top: 14px; background: rgba(255,255,255,.22); color: #fff; border: 1.5px solid rgba(255,255,255,.55); border-radius: 30px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-block; backdrop-filter: blur(4px); transition: background .2s; }
-    .hero-btn:active { background: rgba(255,255,255,.38); }
+    .tip-card  { margin:0 16px 20px; background:linear-gradient(135deg,#34C759,#30D158); border-radius:var(--radius); padding:16px 18px; color:#fff; box-shadow:0 4px 16px rgba(52,199,89,.3); }
+    .tip-tag   { font-size:10px; font-weight:700; letter-spacing:.8px; opacity:.8; margin-bottom:6px; }
+    .tip-card p{ font-size:14px; font-weight:500; line-height:1.55; }
 
-    .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px 16px; }
-    .qa-card { background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: transform .15s, box-shadow .15s; }
-    .qa-card:active { transform: scale(.97); box-shadow: none; }
-    .qa-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    .qa-title { font-size: 14px; font-weight: 700; color: var(--label); }
-    .qa-desc  { font-size: 12px; color: var(--label4); line-height: 1.4; }
+    /* Upcoming Bookings on Home */
+    .upcoming-strip { margin:0 16px 16px; display:flex; flex-direction:column; gap:8px; }
+    .upcoming-item { background:var(--card); border-radius:var(--radius-sm); padding:13px 14px; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; }
+    .upcoming-dot  { width:40px; height:40px; border-radius:10px; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .upcoming-info { flex:1; }
+    .upcoming-name { font-size:14px; font-weight:700; }
+    .upcoming-time { font-size:12px; color:var(--label4); margin-top:2px; }
+    .upcoming-badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+    .badge-confirmed { background:#E8F8EC; color:var(--green); }
+    .badge-pending   { background:#FFF4E5; color:var(--orange); }
 
-    .stat-row { display: flex; gap: 10px; margin: 0 16px 16px; }
-    .stat-card { flex: 1; background: var(--card); border-radius: var(--radius); padding: 14px 12px; box-shadow: var(--shadow); text-align: center; }
-    .stat-val  { font-size: 26px; font-weight: 800; color: var(--blue); line-height: 1; }
-    .stat-lbl  { font-size: 11px; color: var(--label4); margin-top: 4px; font-weight: 500; }
+    /* ═══════════════════════════ PADDLE COMPARE ═══════════════════════════ */
+    #screen-compare { padding-top:6px; }
+    .filter-scroll { overflow-x:auto; white-space:nowrap; padding:6px 16px 12px; }
+    .filter-scroll::-webkit-scrollbar { display:none; }
+    .pill { display:inline-flex; align-items:center; gap:5px; background:var(--card); border:1.5px solid var(--sep); border-radius:30px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--label3); cursor:pointer; margin-right:8px; transition:all .2s; }
+    .pill.active { background:var(--blue); border-color:var(--blue); color:#fff; }
 
-    .tip-card { margin: 0 16px 20px; background: linear-gradient(135deg,#34C759,#30D158); border-radius: var(--radius); padding: 16px 18px; color: #fff; box-shadow: 0 4px 16px rgba(52,199,89,.3); }
-    .tip-tag  { font-size: 10px; font-weight: 700; letter-spacing: .8px; opacity: .8; margin-bottom: 6px; }
-    .tip-card p { font-size: 14px; font-weight: 500; line-height: 1.55; }
+    .paddles-grid { display:flex; flex-direction:column; gap:10px; padding:0 16px 10px; }
+    .paddle-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .paddle-card:active { transform:scale(.98); }
+    .paddle-card.selected { border:2px solid var(--blue); box-shadow:0 4px 20px rgba(0,122,255,.2); }
+    .paddle-top  { padding:14px 16px 12px; display:flex; align-items:center; gap:14px; }
+    .paddle-emoji{ font-size:36px; width:60px; height:60px; background:var(--bg); border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .paddle-info { flex:1; }
+    .paddle-name { font-size:16px; font-weight:700; }
+    .paddle-brand{ font-size:13px; color:var(--label4); margin-top:1px; }
+    .paddle-price{ font-size:18px; font-weight:800; color:var(--blue); }
+    .paddle-tags { display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 10px; }
+    .tag { font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; }
+    .tag-blue   { background:var(--blue-light); color:var(--blue); }
+    .tag-green  { background:#E8F8EC; color:var(--green); }
+    .tag-orange { background:#FFF4E5; color:var(--orange); }
+    .tag-purple { background:#F3E8FC; color:var(--purple); }
+    .paddle-stats { display:grid; grid-template-columns:1fr 1fr 1fr; border-top:1px solid var(--sep); }
+    .pstat { text-align:center; padding:10px 8px; border-right:1px solid var(--sep); }
+    .pstat:last-child { border-right:none; }
+    .pstat-val { font-size:15px; font-weight:700; }
+    .pstat-lbl { font-size:10px; color:var(--label4); margin-top:2px; }
+    .paddle-bars { padding:12px 16px 14px; display:flex; flex-direction:column; gap:8px; }
+    .bar-row    { display:flex; align-items:center; gap:8px; }
+    .bar-label  { font-size:12px; color:var(--label3); width:60px; flex-shrink:0; }
+    .bar-track  { flex:1; background:var(--bg); border-radius:99px; height:7px; overflow:hidden; }
+    .bar-fill   { height:100%; border-radius:99px; transition:width .6s ease; }
+    .bar-val    { font-size:12px; font-weight:700; color:var(--label3); width:28px; text-align:right; }
 
-    /* ══════════════════════════════════════════════════════
-       SCREEN 2 — PADDLE COMPARISON
-    ══════════════════════════════════════════════════════ */
-    #screen-compare { padding-top: 6px; }
+    .compare-drawer { position:fixed; bottom:var(--tab-h); left:50%; transform:translateX(-50%) translateY(100%); width:100%; max-width:430px; background:rgba(255,255,255,.95); backdrop-filter:blur(20px); border-top:1px solid var(--sep); border-radius:20px 20px 0 0; padding:16px; z-index:200; transition:transform .35s cubic-bezier(.4,0,.2,1); box-shadow:0 -4px 30px rgba(0,0,0,.12); }
+    .compare-drawer.open { transform:translateX(-50%) translateY(0); }
+    .compare-drawer-title { text-align:center; font-size:12px; font-weight:700; color:var(--label4); letter-spacing:.5px; margin-bottom:12px; }
+    .compare-slots { display:flex; gap:8px; margin-bottom:12px; }
+    .cslot { flex:1; background:var(--bg); border-radius:12px; padding:10px; text-align:center; min-height:60px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:2px dashed var(--sep); position:relative; }
+    .cslot.filled { border:2px solid var(--blue); background:var(--blue-light); }
+    .cslot-name  { font-size:12px; font-weight:600; }
+    .cslot-price { font-size:11px; color:var(--blue); }
+    .cslot-rm    { position:absolute; top:4px; right:6px; font-size:15px; color:var(--red); cursor:pointer; }
+    .compare-now-btn { width:100%; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); padding:14px; font-size:15px; font-weight:700; cursor:pointer; }
+    .compare-now-btn:disabled { background:var(--sep); color:var(--label4); cursor:not-allowed; }
 
-    /* Filter Pills */
-    .filter-scroll { overflow-x: auto; white-space: nowrap; padding: 6px 16px 12px; -webkit-overflow-scrolling: touch; }
-    .filter-scroll::-webkit-scrollbar { display: none; }
-    .pill { display: inline-flex; align-items: center; gap: 5px; background: var(--card); border: 1.5px solid var(--sep); border-radius: 30px; padding: 7px 14px; font-size: 13px; font-weight: 600; color: var(--label3); cursor: pointer; margin-right: 8px; transition: all .2s; }
-    .pill.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+    /* ═══════════════════════════ MAP ═══════════════════════════ */
+    .map-search-bar { padding:10px 16px; flex-shrink:0; }
+    .search-input-wrap { display:flex; align-items:center; background:var(--card); border-radius:var(--radius-sm); box-shadow:var(--shadow); overflow:hidden; }
+    .search-icon  { padding:0 12px; font-size:16px; color:var(--label4); }
+    .search-input { flex:1; border:none; outline:none; padding:12px 0; font-size:15px; font-family:inherit; background:transparent; color:var(--label); }
+    .search-input::placeholder { color:var(--label4); }
+    .search-btn   { background:var(--blue); color:#fff; border:none; padding:0 16px; height:46px; font-size:13px; font-weight:600; cursor:pointer; }
+    #map { flex:1; min-height:0; z-index:1; }
+    .map-legend { padding:8px 16px; background:var(--card); border-top:1px solid var(--sep); display:flex; align-items:center; gap:14px; flex-shrink:0; flex-wrap:wrap; }
+    .legend-title { font-size:11px; font-weight:700; color:var(--label4); letter-spacing:.5px; }
+    .legend-item  { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; }
+    .legend-dot   { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
-    /* Paddle Cards Grid */
-    .paddles-grid { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 10px; }
-    .paddle-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-    }
-    .paddle-card:active { transform: scale(.98); box-shadow: none; }
-    .paddle-card.selected { border: 2px solid var(--blue); box-shadow: 0 4px 20px rgba(0,122,255,.2); }
+    /* Court Panel */
+    .court-panel { position:absolute; bottom:0; left:0; right:0; background:rgba(255,255,255,.97); backdrop-filter:blur(20px); border-radius:24px 24px 0 0; box-shadow:0 -4px 30px rgba(0,0,0,.15); transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); z-index:400; padding-bottom:20px; max-height:75%; overflow-y:auto; }
+    .court-panel.open { transform:translateY(0); }
+    .panel-handle { width:36px; height:4px; background:var(--sep); border-radius:99px; margin:12px auto 10px; }
+    .panel-close  { position:absolute; top:14px; right:16px; width:28px; height:28px; background:var(--bg); border:none; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; color:var(--label3); z-index:2; }
+    .panel-header { padding:0 16px 12px; }
+    .panel-name   { font-size:19px; font-weight:800; }
+    .panel-addr   { font-size:13px; color:var(--label4); margin-top:2px; }
+    .panel-rating { display:flex; align-items:center; gap:6px; margin-top:8px; }
+    .stars        { color:#FFD60A; font-size:14px; }
+    .rating-val   { font-size:14px; font-weight:700; }
+    .rating-cnt   { font-size:13px; color:var(--label4); }
 
-    .paddle-top { padding: 14px 16px 12px; display: flex; align-items: center; gap: 14px; }
-    .paddle-emoji { font-size: 36px; width: 60px; height: 60px; background: var(--bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .paddle-info { flex: 1; }
-    .paddle-name  { font-size: 16px; font-weight: 700; color: var(--label); }
-    .paddle-brand { font-size: 13px; color: var(--label4); margin-top: 1px; }
-    .paddle-price { font-size: 18px; font-weight: 800; color: var(--blue); }
+    .util-meter-wrap  { padding:0 16px 14px; }
+    .util-meter-title { font-size:13px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:10px; }
+    .util-meter { display:flex; align-items:center; gap:12px; background:var(--bg); border-radius:var(--radius-sm); padding:14px; }
+    .util-gauge { flex:1; }
+    .gauge-bar  { height:14px; border-radius:99px; background:linear-gradient(90deg,var(--green),var(--orange),var(--red)); position:relative; }
+    .gauge-thumb{ position:absolute; top:50%; transform:translate(-50%,-50%); width:20px; height:20px; background:#fff; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:left .6s ease; }
+    .gauge-labels { display:flex; justify-content:space-between; margin-top:5px; }
+    .gauge-labels span { font-size:10px; font-weight:600; }
+    .util-badge  { padding:8px 14px; border-radius:var(--radius-sm); text-align:center; min-width:80px; }
+    .util-badge .ub-lbl { font-size:10px; font-weight:600; opacity:.7; }
+    .util-badge .ub-val { font-size:17px; font-weight:800; }
+    .badge-low  { background:#E8F8EC; color:var(--green); }
+    .badge-med  { background:#FFF4E5; color:var(--orange); }
+    .badge-high { background:#FFECEB; color:var(--red); }
 
-    .paddle-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
-    .tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
-    .tag-blue   { background: var(--blue-light);  color: var(--blue);  }
-    .tag-green  { background: #E8F8EC; color: var(--green); }
-    .tag-orange { background: #FFF4E5; color: var(--orange); }
-    .tag-purple { background: #F3E8FC; color: var(--purple); }
+    .util-section { padding:0 16px 14px; }
+    .util-title   { font-size:13px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:10px; }
+    .util-grid    { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+    .util-day     { display:flex; flex-direction:column; align-items:center; gap:4px; }
+    .util-day-lbl { font-size:9px; font-weight:600; color:var(--label4); }
+    .util-hours   { display:flex; flex-direction:column; gap:2px; width:100%; }
+    .util-slot    { height:8px; border-radius:2px; }
+    .util-low  { background:var(--green); }
+    .util-med  { background:var(--orange); }
+    .util-high { background:var(--red); }
 
-    .paddle-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--sep); }
-    .pstat { text-align: center; padding: 10px 8px; border-right: 1px solid var(--sep); }
-    .pstat:last-child { border-right: none; }
-    .pstat-val { font-size: 15px; font-weight: 700; color: var(--label); }
-    .pstat-lbl { font-size: 10px; color: var(--label4); margin-top: 2px; }
+    .panel-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 16px 14px; }
+    .pinfo-card { background:var(--bg); border-radius:var(--radius-sm); padding:12px; }
+    .pinfo-lbl  { font-size:11px; color:var(--label4); font-weight:500; }
+    .pinfo-val  { font-size:15px; font-weight:700; margin-top:2px; }
 
-    /* Bar meter */
-    .paddle-bars { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; }
-    .bar-row { display: flex; align-items: center; gap: 8px; }
-    .bar-label { font-size: 12px; color: var(--label3); width: 60px; flex-shrink: 0; }
-    .bar-track { flex: 1; background: var(--bg); border-radius: 99px; height: 7px; overflow: hidden; }
-    .bar-fill  { height: 100%; border-radius: 99px; transition: width .6s ease; }
-    .bar-val   { font-size: 12px; font-weight: 700; color: var(--label3); width: 28px; text-align: right; }
+    .panel-actions { display:flex; gap:10px; padding:0 16px; }
+    .action-btn     { flex:1; padding:13px; border-radius:var(--radius-sm); border:none; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity .2s; }
+    .action-btn:active { opacity:.75; }
+    .btn-primary    { background:var(--blue); color:#fff; }
+    .btn-secondary  { background:var(--bg); color:var(--blue); border:1.5px solid var(--blue); }
 
-    /* Compare Drawer */
-    .compare-drawer {
-      position: fixed; bottom: var(--tab-h); left: 50%; transform: translateX(-50%) translateY(100%);
-      width: 100%; max-width: 430px;
-      background: rgba(255,255,255,.95);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid var(--sep);
-      border-radius: 20px 20px 0 0;
-      padding: 16px;
-      z-index: 200;
-      transition: transform .35s cubic-bezier(.4,0,.2,1);
-      box-shadow: 0 -4px 30px rgba(0,0,0,.12);
-    }
-    .compare-drawer.open { transform: translateX(-50%) translateY(0); }
-    .compare-drawer-title { text-align: center; font-size: 12px; font-weight: 700; color: var(--label4); letter-spacing: .5px; margin-bottom: 12px; }
-    .compare-slots { display: flex; gap: 8px; margin-bottom: 12px; }
-    .cslot { flex: 1; background: var(--bg); border-radius: 12px; padding: 10px; text-align: center; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed var(--sep); position: relative; }
-    .cslot.filled { border: 2px solid var(--blue); background: var(--blue-light); }
-    .cslot-name { font-size: 12px; font-weight: 600; color: var(--label); }
-    .cslot-price{ font-size: 11px; color: var(--blue); }
-    .cslot-rm   { position: absolute; top: 4px; right: 6px; font-size: 15px; color: var(--red); cursor: pointer; }
-    .compare-now-btn { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-sm); padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: -.1px; }
-    .compare-now-btn:disabled { background: var(--sep); color: var(--label4); cursor: not-allowed; }
+    /* ═══════════════════════════ BOOKING MODAL ═══════════════════════════ */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:600; align-items:flex-end; max-width:430px; margin:0 auto; left:50%; transform:translateX(-50%); }
+    .modal-overlay.open { display:flex; }
+    .modal-sheet { width:100%; background:var(--card); border-radius:24px 24px 0 0; max-height:92vh; overflow-y:auto; padding-bottom:34px; animation:slideUp .35s cubic-bezier(.4,0,.2,1); position:relative; }
+    @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+    .modal-handle { width:36px; height:4px; background:var(--sep); border-radius:99px; margin:12px auto 0; }
+    .modal-close  { position:absolute; top:16px; right:16px; width:30px; height:30px; background:var(--bg); border-radius:50%; border:none; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--label3); z-index:2; }
 
-    /* Compare Modal */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; align-items: flex-end; max-width: 430px; margin: 0 auto; left: 50%; transform: translateX(-50%); }
-    .modal-overlay.open { display: flex; }
-    .modal-sheet { width: 100%; background: var(--card); border-radius: 24px 24px 0 0; max-height: 90vh; overflow-y: auto; padding-bottom: 30px; animation: slideUp .35s ease; }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .modal-handle { width: 36px; height: 4px; background: var(--sep); border-radius: 99px; margin: 12px auto 16px; }
-    .modal-title  { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 16px; color: var(--label); }
-    .modal-close  { position: absolute; right: 16px; top: 20px; width: 28px; height: 28px; background: var(--bg); border-radius: 50%; border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--label3); }
-    .modal-sheet { position: relative; }
+    /* Booking Steps */
+    .booking-header { padding:20px 20px 0; }
+    .booking-title  { font-size:20px; font-weight:800; letter-spacing:-.3px; }
+    .booking-sub    { font-size:13px; color:var(--label4); margin-top:3px; }
 
-    .compare-table { padding: 0 16px; }
-    .ct-header { display: grid; grid-template-columns: 100px 1fr 1fr; gap: 6px; margin-bottom: 12px; }
-    .ct-head { text-align: center; font-size: 13px; font-weight: 700; color: var(--label); background: var(--bg); border-radius: 10px; padding: 10px 6px; }
-    .ct-row { display: grid; grid-template-columns: 100px 1fr 1fr; gap: 6px; margin-bottom: 8px; align-items: center; }
-    .ct-attr { font-size: 13px; color: var(--label3); font-weight: 500; }
-    .ct-val  { text-align: center; font-size: 14px; font-weight: 700; color: var(--label); background: var(--bg); border-radius: 10px; padding: 10px 6px; }
-    .ct-val.best { background: #E8F8EC; color: var(--green); }
-    .ct-val.worst { background: #FFF4E5; color: var(--orange); }
-    .ct-bar-wrap { text-align: center; background: var(--bg); border-radius: 10px; padding: 8px 10px; }
-    .ct-bar-track { background: var(--sep); border-radius: 99px; height: 6px; overflow: hidden; margin-top: 4px; }
-    .ct-bar-fill  { height: 100%; border-radius: 99px; }
+    /* Step Indicator */
+    .step-indicator { display:flex; align-items:center; padding:16px 20px 8px; }
+    .step-dot       { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; transition:all .3s; }
+    .step-dot.done   { background:var(--green); color:#fff; }
+    .step-dot.active { background:var(--blue); color:#fff; box-shadow:0 2px 10px rgba(0,122,255,.4); }
+    .step-dot.future { background:var(--sep); color:var(--label4); }
+    .step-line { flex:1; height:2px; background:var(--sep); margin:0 4px; transition:background .3s; }
+    .step-line.done { background:var(--green); }
+    .step-labels { display:flex; justify-content:space-between; padding:0 20px 16px; }
+    .step-lbl    { font-size:10px; font-weight:600; color:var(--label4); text-align:center; width:28px; }
+    .step-lbl.active { color:var(--blue); }
 
-    /* ══════════════════════════════════════════════════════
-       SCREEN 3 — COURT MAP
-    ══════════════════════════════════════════════════════ */
-    #screen-map { display: none; flex-direction: column; padding-bottom: 0; }
-    #screen-map.active { display: flex; }
+    /* Step Panels */
+    .step-panel { display:none; padding:0 20px; }
+    .step-panel.active { display:block; }
 
-    .map-search-bar { padding: 10px 16px; flex-shrink: 0; }
-    .search-input-wrap { display: flex; align-items: center; background: var(--card); border-radius: var(--radius-sm); box-shadow: var(--shadow); overflow: hidden; }
-    .search-icon { padding: 0 12px; font-size: 16px; color: var(--label4); }
-    .search-input { flex: 1; border: none; outline: none; padding: 12px 0; font-size: 15px; font-family: inherit; background: transparent; color: var(--label); }
-    .search-input::placeholder { color: var(--label4); }
-    .search-btn { background: var(--blue); color: #fff; border: none; padding: 0 16px; height: 100%; font-size: 13px; font-weight: 600; cursor: pointer; }
+    /* Calendar */
+    .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .cal-month { font-size:16px; font-weight:700; }
+    .cal-arrow { background:var(--bg); border:none; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--label3); }
+    .cal-grid  { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .cal-dow   { text-align:center; font-size:11px; font-weight:600; color:var(--label4); padding:4px 0; }
+    .cal-day   { text-align:center; padding:8px 4px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; transition:all .2s; min-height:36px; display:flex; align-items:center; justify-content:center; }
+    .cal-day:hover    { background:var(--blue-light); }
+    .cal-day.today    { font-weight:800; color:var(--blue); }
+    .cal-day.selected { background:var(--blue); color:#fff; font-weight:700; }
+    .cal-day.past     { color:var(--sep); cursor:default; pointer-events:none; }
+    .cal-day.empty    { cursor:default; }
+    .cal-day.has-avail::after { content:''; display:block; width:4px; height:4px; background:var(--green); border-radius:50%; margin:1px auto 0; }
+    .cal-day.selected::after  { background:#fff !important; }
 
-    #map { flex: 1; min-height: 0; z-index: 1; }
+    /* Duration + Players */
+    .option-group { margin-bottom:20px; }
+    .option-label { font-size:13px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:10px; }
+    .option-pills { display:flex; gap:8px; flex-wrap:wrap; }
+    .option-pill  { padding:10px 18px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; color:var(--label); }
+    .option-pill.selected { background:var(--blue); border-color:var(--blue); color:#fff; }
 
-    .map-legend { padding: 8px 16px; background: var(--card); border-top: 1px solid var(--sep); display: flex; align-items: center; gap: 14px; flex-shrink: 0; flex-wrap: wrap; }
-    .legend-title { font-size: 11px; font-weight: 700; color: var(--label4); letter-spacing: .5px; }
-    .legend-item  { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
-    .legend-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    /* Time Slots */
+    .slots-section { margin-bottom:20px; }
+    .slots-label   { font-size:13px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:10px; }
+    .slots-grid    { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .time-slot     { padding:11px 6px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); text-align:center; cursor:pointer; transition:all .2s; }
+    .time-slot .ts-time  { font-size:14px; font-weight:700; color:var(--label); }
+    .time-slot .ts-avail { font-size:10px; color:var(--label4); margin-top:2px; }
+    .time-slot.selected  { background:var(--blue); border-color:var(--blue); }
+    .time-slot.selected .ts-time  { color:#fff; }
+    .time-slot.selected .ts-avail { color:rgba(255,255,255,.75); }
+    .time-slot.unavail   { opacity:.4; cursor:not-allowed; pointer-events:none; }
+    .time-slot.limited   { border-color:var(--orange); }
+    .time-slot.limited .ts-avail { color:var(--orange); }
 
-    /* Court Detail Panel */
-    .court-panel {
-      position: absolute;
-      bottom: calc(var(--tab-h));
-      left: 0; right: 0;
-      background: rgba(255,255,255,.97);
-      backdrop-filter: blur(20px);
-      border-radius: 24px 24px 0 0;
-      box-shadow: 0 -4px 30px rgba(0,0,0,.15);
-      transform: translateY(100%);
-      transition: transform .35s cubic-bezier(.4,0,.2,1);
-      z-index: 400;
-      padding-bottom: 20px;
-      max-height: 70%;
-      overflow-y: auto;
-    }
-    .court-panel.open { transform: translateY(0); }
-    .panel-handle { width: 36px; height: 4px; background: var(--sep); border-radius: 99px; margin: 12px auto 10px; }
-    .panel-close  { position: absolute; top: 14px; right: 16px; width: 28px; height: 28px; background: var(--bg); border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--label3); z-index: 2; }
+    /* Court Picker Step */
+    .court-option { background:var(--bg); border-radius:var(--radius-sm); padding:13px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; cursor:pointer; border:1.5px solid var(--sep); transition:all .2s; }
+    .court-option:active { opacity:.7; }
+    .court-option.selected { background:var(--blue-light); border-color:var(--blue); }
+    .court-num  { width:36px; height:36px; border-radius:10px; background:var(--card); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:var(--blue); flex-shrink:0; box-shadow:var(--shadow); }
+    .court-option.selected .court-num { background:var(--blue); color:#fff; }
+    .court-opt-label { flex:1; font-size:14px; font-weight:600; }
+    .court-opt-sub   { font-size:12px; color:var(--label4); margin-top:2px; }
+    .court-option.selected .court-opt-sub { color:rgba(0,122,255,.7); }
 
-    .panel-header { padding: 0 16px 12px; }
-    .panel-name   { font-size: 19px; font-weight: 800; color: var(--label); }
-    .panel-addr   { font-size: 13px; color: var(--label4); margin-top: 2px; }
-    .panel-rating { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
-    .stars        { color: #FFD60A; font-size: 14px; }
-    .rating-val   { font-size: 14px; font-weight: 700; color: var(--label); }
-    .rating-cnt   { font-size: 13px; color: var(--label4); }
+    /* Summary Step */
+    .summary-card { background:var(--bg); border-radius:var(--radius); overflow:hidden; margin-bottom:16px; }
+    .summary-banner { background:linear-gradient(135deg,var(--blue),var(--teal)); padding:18px; color:#fff; position:relative; overflow:hidden; }
+    .summary-banner::after { content:"🏓"; font-size:56px; position:absolute; right:-4px; bottom:-8px; opacity:.3; }
+    .summary-court-name { font-size:16px; font-weight:800; }
+    .summary-court-addr { font-size:12px; opacity:.8; margin-top:2px; }
+    .summary-rows { background:var(--card); }
+    .summary-row  { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--sep); }
+    .summary-row:last-child { border-bottom:none; }
+    .sum-lbl { font-size:14px; color:var(--label3); }
+    .sum-val { font-size:14px; font-weight:700; color:var(--label); }
 
-    .util-section { padding: 0 16px 14px; }
-    .util-title   { font-size: 13px; font-weight: 700; color: var(--label4); letter-spacing: .4px; margin-bottom: 10px; }
-    .util-grid    { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-    .util-day     { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .util-day-lbl { font-size: 9px; font-weight: 600; color: var(--label4); }
-    .util-hours   { display: flex; flex-direction: column; gap: 2px; width: 100%; }
-    .util-slot    { height: 8px; border-radius: 2px; }
-    .util-low     { background: var(--green); }
-    .util-med     { background: var(--orange); }
-    .util-high    { background: var(--red); }
+    .price-breakdown { background:var(--bg); border-radius:var(--radius); overflow:hidden; margin-bottom:16px; }
+    .price-row       { display:flex; justify-content:space-between; padding:11px 16px; background:var(--card); border-bottom:1px solid var(--sep); font-size:14px; }
+    .price-row:last-child { border-bottom:none; }
+    .price-row.total { font-weight:800; font-size:16px; background:var(--blue-light); }
+    .price-row.total span:last-child { color:var(--blue); }
 
-    .util-meter-wrap { padding: 0 16px 14px; }
-    .util-meter-title { font-size: 13px; font-weight: 700; color: var(--label4); letter-spacing: .4px; margin-bottom: 10px; }
-    .util-meter { display: flex; align-items: center; gap: 12px; background: var(--bg); border-radius: var(--radius-sm); padding: 14px; }
-    .util-gauge { flex: 1; }
-    .gauge-bar  { height: 14px; border-radius: 99px; background: linear-gradient(90deg, var(--green), var(--orange), var(--red)); position: relative; overflow: visible; }
-    .gauge-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,.25); transition: left .6s ease; }
-    .gauge-labels { display: flex; justify-content: space-between; margin-top: 5px; }
-    .gauge-labels span { font-size: 10px; font-weight: 600; }
-    .util-badge { padding: 8px 14px; border-radius: var(--radius-sm); text-align: center; min-width: 80px; }
-    .util-badge .ub-lbl { font-size: 10px; font-weight: 600; opacity: .7; }
-    .util-badge .ub-val { font-size: 17px; font-weight: 800; }
-    .badge-low  { background: #E8F8EC; color: var(--green);  }
-    .badge-med  { background: #FFF4E5; color: var(--orange); }
-    .badge-high { background: #FFECEB; color: var(--red);    }
+    .coupon-row { display:flex; gap:8px; margin-bottom:16px; }
+    .coupon-input { flex:1; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--sep); font-size:14px; font-family:inherit; outline:none; background:var(--card); color:var(--label); }
+    .coupon-input:focus { border-color:var(--blue); }
+    .coupon-btn { background:var(--bg); border:1.5px solid var(--sep); border-radius:var(--radius-sm); padding:12px 16px; font-size:13px; font-weight:700; cursor:pointer; color:var(--blue); white-space:nowrap; }
 
-    .panel-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px 14px; }
-    .pinfo-card { background: var(--bg); border-radius: var(--radius-sm); padding: 12px; }
-    .pinfo-lbl  { font-size: 11px; color: var(--label4); font-weight: 500; }
-    .pinfo-val  { font-size: 15px; font-weight: 700; color: var(--label); margin-top: 2px; }
+    /* Nav buttons */
+    .booking-nav { display:flex; gap:10px; padding:16px 20px 0; }
+    .nav-back     { flex:1; padding:14px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); font-size:15px; font-weight:700; cursor:pointer; color:var(--label3); }
+    .nav-next     { flex:2; padding:14px; border-radius:var(--radius-sm); background:var(--blue); border:none; font-size:15px; font-weight:700; cursor:pointer; color:#fff; transition:opacity .2s; }
+    .nav-next:disabled { background:var(--sep); color:var(--label4); cursor:not-allowed; }
+    .nav-next.confirm  { background:var(--green); }
 
-    .panel-actions { display: flex; gap: 10px; padding: 0 16px; }
-    .action-btn { flex: 1; padding: 13px; border-radius: var(--radius-sm); border: none; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity .2s; }
-    .action-btn:active { opacity: .75; }
-    .btn-primary   { background: var(--blue); color: #fff; }
-    .btn-secondary { background: var(--bg); color: var(--blue); border: 1.5px solid var(--blue); }
+    /* Success Screen */
+    .success-screen { display:none; padding:30px 20px; text-align:center; }
+    .success-screen.show { display:block; }
+    .success-anim   { width:80px; height:80px; background:linear-gradient(135deg,var(--green),#30D158); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:38px; margin:0 auto 20px; box-shadow:0 4px 24px rgba(52,199,89,.4); animation:popIn .5s cubic-bezier(.4,0,.2,1); }
+    @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+    .success-title  { font-size:22px; font-weight:800; margin-bottom:8px; }
+    .success-sub    { font-size:14px; color:var(--label4); line-height:1.6; margin-bottom:24px; }
+    .success-ref    { background:var(--bg); border-radius:var(--radius-sm); padding:14px; margin-bottom:20px; }
+    .success-ref-lbl{ font-size:11px; font-weight:700; color:var(--label4); letter-spacing:.5px; }
+    .success-ref-val{ font-size:20px; font-weight:800; color:var(--blue); margin-top:4px; letter-spacing:2px; }
+    .success-detail { background:var(--bg); border-radius:var(--radius-sm); padding:14px; margin-bottom:20px; text-align:left; }
+    .sdet-row       { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--sep); font-size:14px; }
+    .sdet-row:last-child { border-bottom:none; }
+    .sdet-lbl { color:var(--label4); }
+    .sdet-val { font-weight:700; }
+    .success-btns { display:flex; gap:10px; }
+    .suc-btn { flex:1; padding:13px; border-radius:var(--radius-sm); font-size:14px; font-weight:700; cursor:pointer; border:none; }
+    .suc-primary   { background:var(--blue); color:#fff; }
+    .suc-secondary { background:var(--bg); color:var(--blue); border:1.5px solid var(--blue) !important; }
 
-    /* ══════════════════════════════════════════════════════
-       SCREEN 4 — PROFILE
-    ══════════════════════════════════════════════════════ */
-    #screen-profile { padding-top: 6px; }
+    /* ═══════════════════════════ MY BOOKINGS ═══════════════════════════ */
+    .bookings-tabs { display:flex; gap:0; margin:0 16px 14px; background:var(--bg); border-radius:var(--radius-sm); padding:3px; }
+    .btab { flex:1; padding:8px; text-align:center; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; color:var(--label4); border:none; background:transparent; transition:all .2s; }
+    .btab.active { background:var(--card); color:var(--label); box-shadow:var(--shadow); }
 
-    .profile-header { display: flex; align-items: center; gap: 16px; margin: 12px 16px 20px; }
-    .avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; font-weight: 700; flex-shrink: 0; box-shadow: 0 4px 16px rgba(0,122,255,.3); }
-    .profile-name  { font-size: 20px; font-weight: 800; color: var(--label); }
-    .profile-level { font-size: 13px; color: var(--label4); margin-top: 3px; }
-    .profile-edit  { margin-top: 6px; background: var(--blue-light); color: var(--blue); border: none; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .booking-item { background:var(--card); border-radius:var(--radius); margin:0 16px 10px; box-shadow:var(--shadow); overflow:hidden; }
+    .booking-item-header { padding:14px 16px 10px; display:flex; align-items:flex-start; justify-content:space-between; }
+    .bi-court { font-size:15px; font-weight:700; flex:1; padding-right:8px; }
+    .bi-status { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; flex-shrink:0; }
+    .bi-status.confirmed { background:#E8F8EC; color:var(--green); }
+    .bi-status.pending   { background:#FFF4E5; color:var(--orange); }
+    .bi-status.cancelled { background:#FFECEB; color:var(--red); }
+    .bi-status.completed { background:var(--bg); color:var(--label4); }
+    .booking-item-details { display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:1px solid var(--sep); }
+    .bid      { padding:10px 16px; border-right:1px solid var(--sep); }
+    .bid:nth-child(even) { border-right:none; }
+    .bid-lbl  { font-size:10px; font-weight:600; color:var(--label4); letter-spacing:.3px; }
+    .bid-val  { font-size:14px; font-weight:700; margin-top:2px; }
+    .booking-item-actions { display:flex; border-top:1px solid var(--sep); }
+    .bi-action { flex:1; padding:12px; text-align:center; font-size:13px; font-weight:700; cursor:pointer; border:none; background:transparent; color:var(--blue); border-right:1px solid var(--sep); }
+    .bi-action:last-child { border-right:none; }
+    .bi-action.cancel { color:var(--red); }
 
-    .settings-group { margin: 0 16px 16px; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-    .settings-group-title { padding: 10px 16px 6px; font-size: 12px; font-weight: 700; color: var(--label4); letter-spacing: .5px; background: var(--card); }
-    .setting-row { display: flex; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--sep); gap: 12px; cursor: pointer; }
-    .setting-row:last-child { border-bottom: none; }
-    .setting-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-    .setting-text { flex: 1; }
-    .setting-label { font-size: 15px; color: var(--label); font-weight: 500; }
-    .setting-val   { font-size: 13px; color: var(--label4); margin-top: 1px; }
-    .setting-arrow { color: var(--label4); font-size: 14px; }
-    .toggle { width: 50px; height: 28px; background: var(--sep); border-radius: 99px; position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
-    .toggle.on { background: var(--green); }
-    .toggle::after { content: ''; width: 24px; height: 24px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
-    .toggle.on::after { transform: translateX(22px); }
+    .empty-state { text-align:center; padding:50px 30px; color:var(--label4); }
+    .empty-icon  { font-size:48px; margin-bottom:12px; }
+    .empty-title { font-size:16px; font-weight:700; color:var(--label3); margin-bottom:6px; }
+    .empty-desc  { font-size:13px; line-height:1.6; }
 
-    .skill-card { margin: 0 16px 16px; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
-    .skill-title { font-size: 15px; font-weight: 700; color: var(--label); margin-bottom: 12px; }
-    .skill-row    { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .skill-row:last-child { margin-bottom: 0; }
-    .skill-lbl   { font-size: 13px; color: var(--label3); width: 70px; }
-    .skill-bar-track { flex: 1; background: var(--bg); border-radius: 99px; height: 8px; overflow: hidden; }
-    .skill-bar-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--teal)); }
-    .skill-score { font-size: 13px; font-weight: 700; color: var(--label3); width: 28px; text-align: right; }
+    /* ═══════════════════════════ PROFILE ═══════════════════════════ */
+    #screen-profile { padding-top:6px; }
+    .profile-header { display:flex; align-items:center; gap:16px; margin:12px 16px 20px; }
+    .avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; font-weight:700; flex-shrink:0; box-shadow:0 4px 16px rgba(0,122,255,.3); }
+    .profile-name  { font-size:20px; font-weight:800; }
+    .profile-level { font-size:13px; color:var(--label4); margin-top:3px; }
+    .profile-edit  { margin-top:6px; background:var(--blue-light); color:var(--blue); border:none; border-radius:20px; padding:5px 14px; font-size:12px; font-weight:600; cursor:pointer; }
+    .settings-group { margin:0 16px 16px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .settings-group-title { padding:10px 16px 6px; font-size:12px; font-weight:700; color:var(--label4); letter-spacing:.5px; }
+    .setting-row  { display:flex; align-items:center; padding:13px 16px; border-bottom:1px solid var(--sep); gap:12px; cursor:pointer; }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+    .setting-text { flex:1; }
+    .setting-label{ font-size:15px; font-weight:500; }
+    .setting-val  { font-size:13px; color:var(--label4); margin-top:1px; }
+    .setting-arrow{ color:var(--label4); font-size:14px; }
+    .toggle       { width:50px; height:28px; background:var(--sep); border-radius:99px; position:relative; cursor:pointer; transition:background .2s; flex-shrink:0; }
+    .toggle.on    { background:var(--green); }
+    .toggle::after{ content:''; width:24px; height:24px; background:#fff; border-radius:50%; position:absolute; top:2px; left:2px; transition:transform .2s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+    .toggle.on::after { transform:translateX(22px); }
+    .skill-card  { margin:0 16px 16px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; }
+    .skill-title { font-size:15px; font-weight:700; margin-bottom:12px; }
+    .skill-row   { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .skill-row:last-child { margin-bottom:0; }
+    .skill-lbl   { font-size:13px; color:var(--label3); width:70px; }
+    .skill-bar-track { flex:1; background:var(--bg); border-radius:99px; height:8px; overflow:hidden; }
+    .skill-bar-fill  { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--blue),var(--teal)); }
+    .skill-score { font-size:13px; font-weight:700; color:var(--label3); width:28px; text-align:right; }
 
-    /* ─── Animations ─── */
-    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-    .screen.active > * { animation: fadeIn .3s ease forwards; }
+    /* ═══════════════════════════ COMPARE MODAL ═══════════════════════════ */
+    .compare-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:700; align-items:flex-end; max-width:430px; margin:0 auto; left:50%; transform:translateX(-50%); }
+    .compare-modal-overlay.open { display:flex; }
+    .compare-modal-sheet { width:100%; background:var(--card); border-radius:24px 24px 0 0; max-height:90vh; overflow-y:auto; padding-bottom:30px; animation:slideUp .35s ease; position:relative; }
+    .ct-header { display:grid; grid-template-columns:100px 1fr 1fr; gap:6px; margin-bottom:12px; }
+    .ct-head   { text-align:center; font-size:13px; font-weight:700; background:var(--bg); border-radius:10px; padding:10px 6px; }
+    .ct-row    { display:grid; grid-template-columns:100px 1fr 1fr; gap:6px; margin-bottom:8px; align-items:center; }
+    .ct-attr   { font-size:13px; color:var(--label3); font-weight:500; }
+    .ct-val    { text-align:center; font-size:14px; font-weight:700; background:var(--bg); border-radius:10px; padding:10px 6px; }
+    .ct-val.best  { background:#E8F8EC; color:var(--green); }
+    .ct-val.worst { background:#FFF4E5; color:var(--orange); }
+    .ct-bar-wrap  { text-align:center; background:var(--bg); border-radius:10px; padding:8px 10px; }
+    .ct-bar-wrap.best  { background:#E8F8EC; }
+    .ct-bar-wrap.worst { background:#FFF4E5; }
+    .ct-bar-track { background:var(--sep); border-radius:99px; height:6px; overflow:hidden; margin-top:4px; }
+    .ct-bar-fill  { height:100%; border-radius:99px; }
 
-    /* ─── Leaflet overrides ─── */
-    .leaflet-popup-content-wrapper { border-radius: 12px !important; box-shadow: var(--shadow-md) !important; font-family: 'Inter', sans-serif !important; }
-    .leaflet-popup-content { font-size: 13px; color: var(--label); margin: 10px 14px !important; }
-    .leaflet-popup-tip-container { display: none; }
-    .leaflet-control-zoom a { font-family: inherit !important; }
+    /* ═══════════════════════════ ANIMATIONS ═══════════════════════════ */
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .screen.active > * { animation:fadeIn .3s ease forwards; }
+    ::-webkit-scrollbar { display:none; }
 
-    /* ─── Scrollbar hide ─── */
-    ::-webkit-scrollbar { display: none; }
+    /* Leaflet */
+    .leaflet-popup-content-wrapper { border-radius:12px !important; box-shadow:var(--shadow-md) !important; font-family:'Inter',sans-serif !important; }
+    .leaflet-popup-content { font-size:13px; margin:10px 14px !important; }
+    .leaflet-popup-tip-container { display:none; }
   </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ─── HEADER ─── -->
+  <!-- HEADER -->
   <div class="app-header">
     <h1>PicklePro <span class="header-badge">BETA</span></h1>
   </div>
 
-  <!-- ══════════════════════════════════════════════
-       SCREEN 1: HOME
-  ══════════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════
+       HOME SCREEN
+  ══════════════════════════════════════ -->
   <div id="screen-home" class="screen active">
-
     <div class="hero-banner">
       <h2>Welcome Back! 👋</h2>
-      <p>Find courts, compare paddles, and track your game.</p>
+      <p>Find courts, compare paddles, and book your next match.</p>
       <div class="hero-btn" onclick="switchTab('map')">Find Courts Near Me →</div>
     </div>
 
     <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-val">24</div>
-        <div class="stat-lbl">Courts Nearby</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val">3.8</div>
-        <div class="stat-lbl">Your DUPR Rating</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val">47</div>
-        <div class="stat-lbl">Games Logged</div>
-      </div>
+      <div class="stat-card"><div class="stat-val">24</div><div class="stat-lbl">Courts Nearby</div></div>
+      <div class="stat-card"><div class="stat-val">3.8</div><div class="stat-lbl">Your DUPR</div></div>
+      <div class="stat-card"><div class="stat-val" id="homeBookingCount">2</div><div class="stat-lbl">Upcoming</div></div>
     </div>
 
     <div class="section-header">Quick Actions</div>
@@ -399,41 +435,40 @@
       <div class="qa-card" onclick="switchTab('compare')">
         <div class="qa-icon" style="background:#E8F2FF">🏓</div>
         <div class="qa-title">Compare Paddles</div>
-        <div class="qa-desc">Side-by-side paddle analysis</div>
+        <div class="qa-desc">Side-by-side analysis</div>
       </div>
       <div class="qa-card" onclick="switchTab('map')">
         <div class="qa-icon" style="background:#E8F8EC">📍</div>
         <div class="qa-title">Find Courts</div>
         <div class="qa-desc">Map & utilization data</div>
       </div>
+      <div class="qa-card" onclick="switchTab('bookings')">
+        <div class="qa-icon" style="background:#FFF4E5">📅</div>
+        <div class="qa-title">My Bookings</div>
+        <div class="qa-desc">View & manage reservations</div>
+      </div>
       <div class="qa-card" onclick="switchTab('profile')">
         <div class="qa-icon" style="background:#F3E8FC">👤</div>
         <div class="qa-title">My Profile</div>
         <div class="qa-desc">Stats & preferences</div>
       </div>
-      <div class="qa-card">
-        <div class="qa-icon" style="background:#FFF4E5">📅</div>
-        <div class="qa-title">Book a Court</div>
-        <div class="qa-desc">Reserve your spot</div>
-      </div>
     </div>
 
-    <div class="tip-card">
+    <div class="section-header">Upcoming Bookings</div>
+    <div class="upcoming-strip" id="homeUpcoming"></div>
+
+    <div class="tip-card" style="margin:8px 16px 20px">
       <div class="tip-tag">💡 PRO TIP OF THE DAY</div>
-      <p>"Use a soft dink shot low over the net to force your opponent into the kitchen — it's the foundation of winning strategy!"</p>
+      <p>"Use a soft dink shot low over the net to force your opponent into the kitchen — the foundation of winning strategy!"</p>
     </div>
+  </div>
 
-  </div><!-- /home -->
-
-  <!-- ══════════════════════════════════════════════
-       SCREEN 2: PADDLE COMPARISON
-  ══════════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════
+       PADDLE COMPARE SCREEN
+  ══════════════════════════════════════ -->
   <div id="screen-compare" class="screen">
-
     <div class="section-header">Paddle Comparison</div>
-    <div class="section-sub">Tap paddles to select (up to 2) and compare side-by-side</div>
-
-    <!-- Filter Pills -->
+    <div class="section-sub">Tap paddles to select (up to 2) and compare</div>
     <div class="filter-scroll" id="filterPills">
       <div class="pill active" data-filter="all">All</div>
       <div class="pill" data-filter="graphite">Graphite</div>
@@ -444,11 +479,7 @@
       <div class="pill" data-filter="power">Power</div>
       <div class="pill" data-filter="control">Control</div>
     </div>
-
-    <!-- Paddle Cards -->
     <div class="paddles-grid" id="paddleGrid"></div>
-
-    <!-- Compare Drawer -->
     <div class="compare-drawer" id="compareDrawer">
       <div class="compare-drawer-title">COMPARISON TRAY</div>
       <div class="compare-slots">
@@ -457,24 +488,20 @@
       </div>
       <button class="compare-now-btn" id="compareNowBtn" disabled onclick="openCompareModal()">Compare Now</button>
     </div>
-
-    <!-- Compare Result Modal -->
-    <div class="modal-overlay" id="compareModal">
-      <div class="modal-sheet">
+    <div class="compare-modal-overlay" id="compareModalOverlay">
+      <div class="compare-modal-sheet">
         <div class="modal-handle"></div>
         <button class="modal-close" onclick="closeCompareModal()">✕</button>
-        <div class="modal-title">Head-to-Head</div>
-        <div class="compare-table" id="compareTable"></div>
+        <div style="font-size:18px;font-weight:800;text-align:center;margin-bottom:16px;padding-top:8px;">Head-to-Head</div>
+        <div style="padding:0 16px;" id="compareTable"></div>
       </div>
     </div>
+  </div>
 
-  </div><!-- /compare -->
-
-  <!-- ══════════════════════════════════════════════
-       SCREEN 3: MAP
-  ══════════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════
+       MAP SCREEN
+  ══════════════════════════════════════ -->
   <div id="screen-map" class="screen" style="position:relative;">
-
     <div class="map-search-bar">
       <div class="search-input-wrap">
         <span class="search-icon">🔍</span>
@@ -482,14 +509,12 @@
         <button class="search-btn" onclick="searchLocation()">Go</button>
       </div>
     </div>
-
     <div id="map"></div>
-
     <div class="map-legend">
       <span class="legend-title">UTILIZATION:</span>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Low</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Medium</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> High</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Low</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Medium</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>High</div>
     </div>
 
     <!-- Court Detail Panel -->
@@ -497,23 +522,19 @@
       <div class="panel-handle"></div>
       <button class="panel-close" onclick="closeCourt()">✕</button>
       <div class="panel-header">
-        <div class="panel-name" id="pName">Court Name</div>
-        <div class="panel-addr" id="pAddr">Address</div>
+        <div class="panel-name" id="pName"></div>
+        <div class="panel-addr" id="pAddr"></div>
         <div class="panel-rating">
-          <div class="stars" id="pStars">★★★★☆</div>
-          <div class="rating-val" id="pRating">4.2</div>
-          <div class="rating-cnt" id="pReviews">(128 reviews)</div>
+          <div class="stars" id="pStars"></div>
+          <div class="rating-val" id="pRating"></div>
+          <div class="rating-cnt" id="pReviews"></div>
         </div>
       </div>
-
-      <!-- Live Utilization Meter -->
       <div class="util-meter-wrap">
         <div class="util-meter-title">CURRENT UTILIZATION</div>
         <div class="util-meter">
           <div class="util-gauge">
-            <div class="gauge-bar">
-              <div class="gauge-thumb" id="gaugeThumb" style="left:20%"></div>
-            </div>
+            <div class="gauge-bar"><div class="gauge-thumb" id="gaugeThumb" style="left:20%"></div></div>
             <div class="gauge-labels">
               <span style="color:var(--green)">Low</span>
               <span style="color:var(--orange)">Med</span>
@@ -522,51 +543,49 @@
           </div>
           <div class="util-badge" id="utilBadge">
             <div class="ub-lbl">STATUS</div>
-            <div class="ub-val" id="utilVal">Low</div>
+            <div class="ub-val" id="utilVal"></div>
           </div>
         </div>
       </div>
-
-      <!-- Weekly Heatmap -->
       <div class="util-section">
-        <div class="util-title">WEEKLY HEATMAP (hourly)</div>
+        <div class="util-title">WEEKLY HEATMAP</div>
         <div class="util-grid" id="utilGrid"></div>
       </div>
-
-      <!-- Info Grid -->
       <div class="panel-info-grid">
-        <div class="pinfo-card">
-          <div class="pinfo-lbl">Courts Available</div>
-          <div class="pinfo-val" id="pCourts">6 of 8</div>
-        </div>
-        <div class="pinfo-card">
-          <div class="pinfo-lbl">Surface Type</div>
-          <div class="pinfo-val" id="pSurface">Asphalt</div>
-        </div>
-        <div class="pinfo-card">
-          <div class="pinfo-lbl">Lighting</div>
-          <div class="pinfo-val" id="pLighting">Yes ✓</div>
-        </div>
-        <div class="pinfo-card">
-          <div class="pinfo-lbl">Wait Time</div>
-          <div class="pinfo-val" id="pWait">~10 min</div>
-        </div>
+        <div class="pinfo-card"><div class="pinfo-lbl">Courts Available</div><div class="pinfo-val" id="pCourts"></div></div>
+        <div class="pinfo-card"><div class="pinfo-lbl">Surface Type</div><div class="pinfo-val" id="pSurface"></div></div>
+        <div class="pinfo-card"><div class="pinfo-lbl">Lighting</div><div class="pinfo-val" id="pLighting"></div></div>
+        <div class="pinfo-card"><div class="pinfo-lbl">Est. Wait Time</div><div class="pinfo-val" id="pWait"></div></div>
       </div>
-
-      <!-- Actions -->
       <div class="panel-actions">
-        <button class="action-btn btn-primary">🗺 Directions</button>
-        <button class="action-btn btn-secondary">📅 Book Court</button>
+        <button class="action-btn btn-secondary" onclick="openDirections()">🗺 Directions</button>
+        <button class="action-btn btn-primary" id="bookCourtBtn" onclick="openBookingFromCourt()">📅 Book Court</button>
       </div>
     </div>
+  </div>
 
-  </div><!-- /map -->
+  <!-- ══════════════════════════════════════
+       BOOKINGS SCREEN
+  ══════════════════════════════════════ -->
+  <div id="screen-bookings" class="screen">
+    <div class="section-header">My Bookings</div>
+    <div class="section-sub">Manage your court reservations</div>
+    <div class="bookings-tabs">
+      <button class="btab active" onclick="switchBookingTab('upcoming',this)">Upcoming</button>
+      <button class="btab" onclick="switchBookingTab('past',this)">Past</button>
+      <button class="btab" onclick="switchBookingTab('cancelled',this)">Cancelled</button>
+    </div>
+    <div id="bookingsList"></div>
+    <div style="height:10px"></div>
+    <div style="padding:0 16px 20px;">
+      <button class="action-btn btn-primary" style="width:100%;padding:15px;" onclick="switchTab('map')">＋ Book a New Court</button>
+    </div>
+  </div>
 
-  <!-- ══════════════════════════════════════════════
-       SCREEN 4: PROFILE
-  ══════════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════
+       PROFILE SCREEN
+  ══════════════════════════════════════ -->
   <div id="screen-profile" class="screen">
-
     <div class="profile-header">
       <div class="avatar">JP</div>
       <div>
@@ -575,76 +594,30 @@
         <button class="profile-edit">Edit Profile</button>
       </div>
     </div>
-
     <div class="skill-card">
       <div class="skill-title">🎯 Skill Breakdown</div>
-      <div class="skill-row">
-        <div class="skill-lbl">Dinking</div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:82%"></div></div>
-        <div class="skill-score">8.2</div>
-      </div>
-      <div class="skill-row">
-        <div class="skill-lbl">Serving</div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:74%"></div></div>
-        <div class="skill-score">7.4</div>
-      </div>
-      <div class="skill-row">
-        <div class="skill-lbl">Volley</div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:68%"></div></div>
-        <div class="skill-score">6.8</div>
-      </div>
-      <div class="skill-row">
-        <div class="skill-lbl">3rd Shot</div>
-        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:59%"></div></div>
-        <div class="skill-score">5.9</div>
-      </div>
+      <div class="skill-row"><div class="skill-lbl">Dinking</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:82%"></div></div><div class="skill-score">8.2</div></div>
+      <div class="skill-row"><div class="skill-lbl">Serving</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:74%"></div></div><div class="skill-score">7.4</div></div>
+      <div class="skill-row"><div class="skill-lbl">Volley</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:68%"></div></div><div class="skill-score">6.8</div></div>
+      <div class="skill-row"><div class="skill-lbl">3rd Shot</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:59%"></div></div><div class="skill-score">5.9</div></div>
     </div>
-
     <div class="settings-group">
       <div class="settings-group-title">PREFERENCES</div>
-      <div class="setting-row">
-        <div class="setting-icon" style="background:#E8F2FF">🏏</div>
-        <div class="setting-text">
-          <div class="setting-label">Play Style</div>
-          <div class="setting-val">Control / Dinking</div>
-        </div>
-        <div class="setting-arrow">›</div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-icon" style="background:#FFF4E5">📍</div>
-        <div class="setting-text">
-          <div class="setting-label">Home Location</div>
-          <div class="setting-val">San Diego, CA</div>
-        </div>
-        <div class="setting-arrow">›</div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-icon" style="background:#E8F8EC">🔔</div>
-        <div class="setting-text">
-          <div class="setting-label">Court Notifications</div>
-          <div class="setting-val">When low utilization</div>
-        </div>
-        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-      </div>
+      <div class="setting-row"><div class="setting-icon" style="background:#E8F2FF">🏏</div><div class="setting-text"><div class="setting-label">Play Style</div><div class="setting-val">Control / Dinking</div></div><div class="setting-arrow">›</div></div>
+      <div class="setting-row"><div class="setting-icon" style="background:#FFF4E5">📍</div><div class="setting-text"><div class="setting-label">Home Location</div><div class="setting-val">San Diego, CA</div></div><div class="setting-arrow">›</div></div>
+      <div class="setting-row"><div class="setting-icon" style="background:#E8F8EC">🔔</div><div class="setting-text"><div class="setting-label">Court Notifications</div><div class="setting-val">When low utilization</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
     </div>
-
     <div class="settings-group">
       <div class="settings-group-title">ACCOUNT</div>
-      <div class="setting-row">
-        <div class="setting-icon" style="background:#F3E8FC">🔒</div>
-        <div class="setting-text"><div class="setting-label">Privacy & Security</div></div>
-        <div class="setting-arrow">›</div>
-      </div>
-      <div class="setting-row">
-        <div class="setting-icon" style="background:#FFECEB">🚪</div>
-        <div class="setting-text"><div class="setting-label" style="color:var(--red)">Sign Out</div></div>
-        <div class="setting-arrow">›</div>
-      </div>
+      <div class="setting-row" onclick="switchTab('bookings')"><div class="setting-icon" style="background:#FFF4E5">📅</div><div class="setting-text"><div class="setting-label">My Bookings</div></div><div class="setting-arrow">›</div></div>
+      <div class="setting-row"><div class="setting-icon" style="background:#F3E8FC">🔒</div><div class="setting-text"><div class="setting-label">Privacy & Security</div></div><div class="setting-arrow">›</div></div>
+      <div class="setting-row"><div class="setting-icon" style="background:#FFECEB">🚪</div><div class="setting-text"><div class="setting-label" style="color:var(--red)">Sign Out</div></div><div class="setting-arrow">›</div></div>
     </div>
+  </div>
 
-  </div><!-- /profile -->
-
-  <!-- ─── TAB BAR ─── -->
+  <!-- ══════════════════════════════════════
+       TAB BAR
+  ══════════════════════════════════════ -->
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('home')" id="tab-home">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -652,11 +625,15 @@
     </button>
     <button class="tab-btn" onclick="switchTab('compare')" id="tab-compare">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-      <span>Compare</span>
+      <span>Paddles</span>
     </button>
     <button class="tab-btn" onclick="switchTab('map')" id="tab-map">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
       <span>Courts</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('bookings')" id="tab-bookings">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+      <span>Bookings</span>
     </button>
     <button class="tab-btn" onclick="switchTab('profile')" id="tab-profile">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -664,176 +641,306 @@
     </button>
   </div>
 
+  <!-- ══════════════════════════════════════
+       BOOKING MODAL (Full Flow)
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal-sheet" id="bookingSheet">
+      <div class="modal-handle"></div>
+      <button class="modal-close" onclick="closeBookingModal()">✕</button>
+
+      <!-- Steps wrapper -->
+      <div id="bookingStepsWrapper">
+        <div class="booking-header">
+          <div class="booking-title" id="bookingCourtTitle">Book a Court</div>
+          <div class="booking-sub" id="bookingCourtSub">Select your date and time</div>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+          <div class="step-dot active" id="sdot0">1</div>
+          <div class="step-line" id="sline0"></div>
+          <div class="step-dot future" id="sdot1">2</div>
+          <div class="step-line" id="sline1"></div>
+          <div class="step-dot future" id="sdot2">3</div>
+          <div class="step-line" id="sline2"></div>
+          <div class="step-dot future" id="sdot3">4</div>
+        </div>
+        <div class="step-labels">
+          <div class="step-lbl active" id="slbl0">Date</div>
+          <div class="step-lbl" id="slbl1">Time</div>
+          <div class="step-lbl" id="slbl2">Court</div>
+          <div class="step-lbl" id="slbl3">Review</div>
+        </div>
+
+        <!-- ── STEP 1: Date ── -->
+        <div class="step-panel active" id="step-0">
+          <div style="background:var(--bg);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;">
+            <div class="cal-nav">
+              <button class="cal-arrow" onclick="calNav(-1)">‹</button>
+              <div class="cal-month" id="calMonthLabel"></div>
+              <button class="cal-arrow" onclick="calNav(1)">›</button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+          <div class="option-group">
+            <div class="option-label">DURATION</div>
+            <div class="option-pills" id="durationPills">
+              <div class="option-pill selected" data-dur="60">1 hr</div>
+              <div class="option-pill" data-dur="90">1.5 hr</div>
+              <div class="option-pill" data-dur="120">2 hr</div>
+            </div>
+          </div>
+          <div class="option-group">
+            <div class="option-label">NUMBER OF PLAYERS</div>
+            <div class="option-pills" id="playerPills">
+              <div class="option-pill" data-players="1">1</div>
+              <div class="option-pill selected" data-players="2">2</div>
+              <div class="option-pill" data-players="3">3</div>
+              <div class="option-pill" data-players="4">4</div>
+            </div>
+          </div>
+          <div class="booking-nav">
+            <button class="nav-back" onclick="closeBookingModal()">Cancel</button>
+            <button class="nav-next" id="step0Next" onclick="goStep(1)">Next →</button>
+          </div>
+        </div>
+
+        <!-- ── STEP 2: Time Slot ── -->
+        <div class="step-panel" id="step-1">
+          <div class="slots-section">
+            <div class="slots-label">MORNING</div>
+            <div class="slots-grid" id="slotsAM"></div>
+          </div>
+          <div class="slots-section">
+            <div class="slots-label">AFTERNOON</div>
+            <div class="slots-grid" id="slotsPM"></div>
+          </div>
+          <div class="slots-section">
+            <div class="slots-label">EVENING</div>
+            <div class="slots-grid" id="slotsEve"></div>
+          </div>
+          <div class="booking-nav">
+            <button class="nav-back" onclick="goStep(0)">← Back</button>
+            <button class="nav-next" id="step1Next" disabled onclick="goStep(2)">Next →</button>
+          </div>
+        </div>
+
+        <!-- ── STEP 3: Court Selection ── -->
+        <div class="step-panel" id="step-2">
+          <div style="margin-bottom:14px;">
+            <div style="font-size:13px;font-weight:700;color:var(--label4);letter-spacing:.4px;margin-bottom:10px;">AVAILABLE COURTS</div>
+            <div id="courtOptions"></div>
+          </div>
+          <div class="option-group">
+            <div class="option-label">EQUIPMENT RENTAL</div>
+            <div class="option-pills" id="rentalPills">
+              <div class="option-pill selected" data-rental="none">None</div>
+              <div class="option-pill" data-rental="paddle">Paddle (+$5)</div>
+              <div class="option-pill" data-rental="balls">Balls (+$2)</div>
+              <div class="option-pill" data-rental="both">Both (+$7)</div>
+            </div>
+          </div>
+          <div class="booking-nav">
+            <button class="nav-back" onclick="goStep(1)">← Back</button>
+            <button class="nav-next" id="step2Next" disabled onclick="goStep(3)">Next →</button>
+          </div>
+        </div>
+
+        <!-- ── STEP 4: Review & Pay ── -->
+        <div class="step-panel" id="step-3">
+          <div class="summary-card">
+            <div class="summary-banner">
+              <div class="summary-court-name" id="sumCourtName"></div>
+              <div class="summary-court-addr" id="sumCourtAddr"></div>
+            </div>
+            <div class="summary-rows">
+              <div class="summary-row"><span class="sum-lbl">Date</span><span class="sum-val" id="sumDate"></span></div>
+              <div class="summary-row"><span class="sum-lbl">Time</span><span class="sum-val" id="sumTime"></span></div>
+              <div class="summary-row"><span class="sum-lbl">Duration</span><span class="sum-val" id="sumDuration"></span></div>
+              <div class="summary-row"><span class="sum-lbl">Players</span><span class="sum-val" id="sumPlayers"></span></div>
+              <div class="summary-row"><span class="sum-lbl">Court #</span><span class="sum-val" id="sumCourt"></span></div>
+              <div class="summary-row"><span class="sum-lbl">Rental</span><span class="sum-val" id="sumRental"></span></div>
+            </div>
+          </div>
+          <div class="price-breakdown">
+            <div class="price-row"><span>Court fee</span><span id="priceCourtFee">$0</span></div>
+            <div class="price-row"><span>Equipment rental</span><span id="priceRental">$0</span></div>
+            <div class="price-row"><span>Booking fee</span><span>$1.50</span></div>
+            <div class="price-row total"><span>Total</span><span id="priceTotal">$0</span></div>
+          </div>
+          <div class="coupon-row">
+            <input class="coupon-input" id="couponInput" type="text" placeholder="Promo code (try PICKLE10)" />
+            <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+          </div>
+          <div class="booking-nav">
+            <button class="nav-back" onclick="goStep(2)">← Back</button>
+            <button class="nav-next confirm" onclick="confirmBooking()">✓ Confirm Booking</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Screen -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-anim">✓</div>
+        <div class="success-title">Court Booked! 🎉</div>
+        <div class="success-sub">Your reservation is confirmed.<br>See you on the court!</div>
+        <div class="success-ref">
+          <div class="success-ref-lbl">BOOKING REFERENCE</div>
+          <div class="success-ref-val" id="successRef"></div>
+        </div>
+        <div class="success-detail" id="successDetail"></div>
+        <div class="success-btns">
+          <button class="suc-btn suc-secondary" onclick="closeBookingModal()">Done</button>
+          <button class="suc-btn suc-primary" onclick="goToBookings()">View Bookings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
-<!-- ─── LEAFLET ─── -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════
    DATA
-═══════════════════════════════════════════════ */
-
+═══════════════════════════════════════ */
 const PADDLES = [
-  {
-    id:1, emoji:'🟦', name:'Selkirk SLK Halo', brand:'Selkirk Sport', price:'$189',
-    material:'Carbon Fiber', type:'Elongated', size:'16.5" × 7.375"', weight:'7.8 oz', thickness:'16mm',
-    tags:['carbon','elongated','control'],
-    tagLabels:['Carbon Fiber','Elongated','Control'],
-    tagColors:['tag-blue','tag-purple','tag-green'],
-    power:82, control:94, spin:88, touch:91, reach:95,
-    grip:'4.25"', core:'Polymer Honeycomb', level:'Intermediate–Pro'
-  },
-  {
-    id:2, emoji:'🟩', name:'Joola Ben Johns Hyperion', brand:'Joola', price:'$249',
-    material:'Carbon Fiber', type:'Standard', size:'16" × 8"', weight:'8.0 oz', thickness:'14mm',
-    tags:['carbon','standard','power'],
-    tagLabels:['Carbon Fiber','Standard','Power'],
-    tagColors:['tag-blue','tag-orange','tag-orange'],
-    power:97, control:79, spin:92, touch:76, reach:80,
-    grip:'4.125"', core:'Hyperfoam Edge Wall', level:'Advanced–Pro'
-  },
-  {
-    id:3, emoji:'🟨', name:'Engage Pursuit MX', brand:'Engage Pickleball', price:'$149',
-    material:'Fiberglass', type:'Standard', size:'15.875" × 8.25"', weight:'8.2 oz', thickness:'16mm',
-    tags:['fiberglass','standard','control'],
-    tagLabels:['Fiberglass','Standard','Control'],
-    tagColors:['tag-green','tag-orange','tag-green'],
-    power:75, control:91, spin:80, touch:93, reach:78,
-    grip:'4.5"', core:'Polymer Honeycomb', level:'Beginner–Intermediate'
-  },
-  {
-    id:4, emoji:'🟧', name:'Paddletek Bantam EX-L', brand:'Paddletek', price:'$129',
-    material:'Graphite', type:'Standard', size:'15.75" × 8.25"', weight:'7.4 oz', thickness:'12mm',
-    tags:['graphite','standard','power'],
-    tagLabels:['Graphite','Standard','Power'],
-    tagColors:['tag-purple','tag-orange','tag-orange'],
-    power:88, control:75, spin:84, touch:72, reach:76,
-    grip:'4.25"', core:'Polymer Honeycomb', level:'Beginner–Intermediate'
-  },
-  {
-    id:5, emoji:'🟥', name:'Franklin Ben Johns Signature', brand:'Franklin Sports', price:'$99',
-    material:'Graphite', type:'Elongated', size:'16.5" × 7.5"', weight:'7.9 oz', thickness:'13mm',
-    tags:['graphite','elongated','control'],
-    tagLabels:['Graphite','Elongated','Control'],
-    tagColors:['tag-purple','tag-purple','tag-green'],
-    power:78, control:86, spin:83, touch:85, reach:92,
-    grip:'4.25"', core:'Polymer', level:'All Levels'
-  },
-  {
-    id:6, emoji:'🟪', name:'Head Radical Tour', brand:'HEAD', price:'$169',
-    material:'Fiberglass', type:'Standard', size:'16" × 8"', weight:'8.4 oz', thickness:'16mm',
-    tags:['fiberglass','standard','power'],
-    tagLabels:['Fiberglass','Standard','Power'],
-    tagColors:['tag-green','tag-orange','tag-orange'],
-    power:90, control:82, spin:77, touch:80, reach:79,
-    grip:'4.125"', core:'Power Foam', level:'Intermediate–Advanced'
-  }
+  { id:1, emoji:'🟦', name:'Selkirk SLK Halo', brand:'Selkirk Sport', price:'$189', material:'Carbon Fiber', type:'Elongated', size:'16.5" × 7.375"', weight:'7.8 oz', thickness:'16mm', tags:['carbon','elongated','control'], tagLabels:['Carbon Fiber','Elongated','Control'], tagColors:['tag-blue','tag-purple','tag-green'], power:82, control:94, spin:88, touch:91, reach:95, grip:'4.25"', core:'Polymer Honeycomb', level:'Intermediate–Pro' },
+  { id:2, emoji:'🟩', name:'Joola Ben Johns Hyperion', brand:'Joola', price:'$249', material:'Carbon Fiber', type:'Standard', size:'16" × 8"', weight:'8.0 oz', thickness:'14mm', tags:['carbon','standard','power'], tagLabels:['Carbon Fiber','Standard','Power'], tagColors:['tag-blue','tag-orange','tag-orange'], power:97, control:79, spin:92, touch:76, reach:80, grip:'4.125"', core:'Hyperfoam Edge Wall', level:'Advanced–Pro' },
+  { id:3, emoji:'🟨', name:'Engage Pursuit MX', brand:'Engage Pickleball', price:'$149', material:'Fiberglass', type:'Standard', size:'15.875" × 8.25"', weight:'8.2 oz', thickness:'16mm', tags:['fiberglass','standard','control'], tagLabels:['Fiberglass','Standard','Control'], tagColors:['tag-green','tag-orange','tag-green'], power:75, control:91, spin:80, touch:93, reach:78, grip:'4.5"', core:'Polymer Honeycomb', level:'Beginner–Intermediate' },
+  { id:4, emoji:'🟧', name:'Paddletek Bantam EX-L', brand:'Paddletek', price:'$129', material:'Graphite', type:'Standard', size:'15.75" × 8.25"', weight:'7.4 oz', thickness:'12mm', tags:['graphite','standard','power'], tagLabels:['Graphite','Standard','Power'], tagColors:['tag-purple','tag-orange','tag-orange'], power:88, control:75, spin:84, touch:72, reach:76, grip:'4.25"', core:'Polymer Honeycomb', level:'Beginner–Intermediate' },
+  { id:5, emoji:'🟥', name:'Franklin Ben Johns Signature', brand:'Franklin Sports', price:'$99', material:'Graphite', type:'Elongated', size:'16.5" × 7.5"', weight:'7.9 oz', thickness:'13mm', tags:['graphite','elongated','control'], tagLabels:['Graphite','Elongated','Control'], tagColors:['tag-purple','tag-purple','tag-green'], power:78, control:86, spin:83, touch:85, reach:92, grip:'4.25"', core:'Polymer', level:'All Levels' },
+  { id:6, emoji:'🟪', name:'Head Radical Tour', brand:'HEAD', price:'$169', material:'Fiberglass', type:'Standard', size:'16" × 8"', weight:'8.4 oz', thickness:'16mm', tags:['fiberglass','standard','power'], tagLabels:['Fiberglass','Standard','Power'], tagColors:['tag-green','tag-orange','tag-orange'], power:90, control:82, spin:77, touch:80, reach:79, grip:'4.125"', core:'Power Foam', level:'Intermediate–Advanced' }
 ];
 
-const BAR_COLORS = {
-  power:   '#FF9500',
-  control: '#007AFF',
-  spin:    '#AF52DE',
-  touch:   '#34C759',
-  reach:   '#5AC8FA'
-};
+const BAR_COLORS = { power:'#FF9500', control:'#007AFF', spin:'#AF52DE', touch:'#34C759', reach:'#5AC8FA' };
 
 const COURTS = [
-  { id:1, name:'Balboa Park Pickleball Complex', addr:'2000 Pan American Rd, San Diego, CA', lat:32.731, lng:-117.148, rating:4.8, reviews:342, courts:8, avail:6, surface:'Hard Court', lighting:true, util:'low',    utilPct:20 },
-  { id:2, name:'Morley Field Sports Complex',   addr:'2221 Morley Field Dr, San Diego, CA',  lat:32.742, lng:-117.144, rating:4.5, reviews:219, courts:12, avail:9, surface:'Asphalt', lighting:true, util:'medium', utilPct:55 },
-  { id:3, name:'Miramar Reservoir Park',         addr:'8200 Scripps Ranch Rd, San Diego, CA', lat:32.906, lng:-117.113, rating:4.2, reviews:87,  courts:4,  avail:1, surface:'Concrete', lighting:false,util:'high',   utilPct:88 },
-  { id:4, name:'Robb Field Athletic Area',       addr:'2525 Bacon St, San Diego, CA',          lat:32.755, lng:-117.237, rating:4.6, reviews:173, courts:6,  avail:5, surface:'Hard Court', lighting:true, util:'low',    utilPct:15 },
-  { id:5, name:'Nobel Athletic Area',            addr:'8282 Clairmont Mesa Blvd, San Diego',   lat:32.847, lng:-117.208, rating:4.0, reviews:56,  courts:4,  avail:2, surface:'Asphalt', lighting:false,util:'high',   utilPct:80 },
-  { id:6, name:'Chollas Lake Park Courts',       addr:'6350 Chollas Pkwy, San Diego, CA',       lat:32.710, lng:-117.090, rating:4.3, reviews:128, courts:6,  avail:4, surface:'Hard Court', lighting:true, util:'medium', utilPct:50 },
-  { id:7, name:'Sunset Cliffs Pickle Club',      addr:'4030 Orchard Ave, San Diego, CA',        lat:32.726, lng:-117.258, rating:4.7, reviews:201, courts:5,  avail:5, surface:'Concrete', lighting:true, util:'low',    utilPct:10 },
+  { id:1, name:'Balboa Park Pickleball Complex', addr:'2000 Pan American Rd, San Diego, CA', lat:32.731, lng:-117.148, rating:4.8, reviews:342, courts:8, avail:6, surface:'Hard Court', lighting:true, util:'low', utilPct:20, pricePerHr:12 },
+  { id:2, name:'Morley Field Sports Complex',    addr:'2221 Morley Field Dr, San Diego, CA',  lat:32.742, lng:-117.144, rating:4.5, reviews:219, courts:12, avail:9, surface:'Asphalt', lighting:true, util:'medium', utilPct:55, pricePerHr:10 },
+  { id:3, name:'Miramar Reservoir Park',          addr:'8200 Scripps Ranch Rd, San Diego, CA', lat:32.906, lng:-117.113, rating:4.2, reviews:87,  courts:4, avail:1, surface:'Concrete', lighting:false, util:'high', utilPct:88, pricePerHr:8 },
+  { id:4, name:'Robb Field Athletic Area',        addr:'2525 Bacon St, San Diego, CA',          lat:32.755, lng:-117.237, rating:4.6, reviews:173, courts:6, avail:5, surface:'Hard Court', lighting:true, util:'low', utilPct:15, pricePerHr:12 },
+  { id:5, name:'Nobel Athletic Area',             addr:'8282 Clairmont Mesa Blvd, San Diego',   lat:32.847, lng:-117.208, rating:4.0, reviews:56,  courts:4, avail:2, surface:'Asphalt', lighting:false, util:'high', utilPct:80, pricePerHr:8 },
+  { id:6, name:'Chollas Lake Park Courts',        addr:'6350 Chollas Pkwy, San Diego, CA',       lat:32.710, lng:-117.090, rating:4.3, reviews:128, courts:6, avail:4, surface:'Hard Court', lighting:true, util:'medium', utilPct:50, pricePerHr:10 },
+  { id:7, name:'Sunset Cliffs Pickle Club',       addr:'4030 Orchard Ave, San Diego, CA',        lat:32.726, lng:-117.258, rating:4.7, reviews:201, courts:5, avail:5, surface:'Concrete', lighting:true, util:'low', utilPct:10, pricePerHr:14 },
 ];
 
-/* ═══════════════════════════════════════════════
-   TABS
-═══════════════════════════════════════════════ */
-let mapInited = false;
+// Seeded bookings
+let bookings = [
+  { id:'PKL-4821', courtId:1, courtName:'Balboa Park Pickleball Complex', courtAddr:'2000 Pan American Rd, San Diego, CA', date:'2026-03-12', time:'10:00 AM', duration:60, players:2, courtNum:'Court 3', rental:'None', total:13.50, status:'confirmed' },
+  { id:'PKL-3190', courtId:4, courtName:'Robb Field Athletic Area', courtAddr:'2525 Bacon St, San Diego, CA', date:'2026-03-15', time:'2:00 PM', duration:90, players:4, courtNum:'Court 1', rental:'Balls', total:20.50, status:'confirmed' },
+  { id:'PKL-2047', courtId:2, courtName:'Morley Field Sports Complex', courtAddr:'2221 Morley Field Dr, San Diego, CA', date:'2026-02-22', time:'9:00 AM', duration:60, players:2, courtNum:'Court 5', rental:'None', total:11.50, status:'completed' },
+  { id:'PKL-1883', courtId:6, courtName:'Chollas Lake Park Courts', courtAddr:'6350 Chollas Pkwy, San Diego, CA', date:'2026-02-10', time:'4:00 PM', duration:60, players:2, courtNum:'Court 2', rental:'None', total:11.50, status:'cancelled' },
+];
 
+/* ═══════════════════════════════════════
+   BOOKING STATE
+═══════════════════════════════════════ */
+let bookingState = {
+  court: null, step: 0, selectedDate: null,
+  duration: 60, players: 2, timeSlot: null,
+  courtNum: null, rental: 'none', couponApplied: false
+};
+
+let calYear, calMonth;
+
+/* ═══════════════════════════════════════
+   TABS
+═══════════════════════════════════════ */
+let mapInited = false;
 function switchTab(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const s = document.getElementById('screen-'+name);
+  const s = document.getElementById('screen-' + name);
   if (s) s.classList.add('active');
-  const b = document.getElementById('tab-'+name);
+  const b = document.getElementById('tab-' + name);
   if (b) b.classList.add('active');
   if (name === 'map' && !mapInited) { initMap(); mapInited = true; }
+  if (name === 'bookings') renderBookingsList('upcoming');
+  if (name === 'home') renderHomeUpcoming();
 }
 
-/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════
+   HOME
+═══════════════════════════════════════ */
+function renderHomeUpcoming() {
+  const el = document.getElementById('homeUpcoming');
+  const upcoming = bookings.filter(b => b.status === 'confirmed').slice(0, 2);
+  if (!upcoming.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--label4);font-size:14px;">No upcoming bookings. <span style="color:var(--blue);cursor:pointer;" onclick="switchTab(\'map\')">Book a court →</span></div>';
+    return;
+  }
+  el.innerHTML = upcoming.map(bk => `
+    <div class="upcoming-item">
+      <div class="upcoming-dot">📅</div>
+      <div class="upcoming-info">
+        <div class="upcoming-name">${bk.courtName.split(' ').slice(0,3).join(' ')}</div>
+        <div class="upcoming-time">${formatDateDisplay(bk.date)} · ${bk.time} · ${bk.duration >= 60 ? bk.duration/60 + ' hr' : bk.duration + ' min'}</div>
+      </div>
+      <div class="upcoming-badge badge-confirmed">Confirmed</div>
+    </div>`).join('');
+  document.getElementById('homeBookingCount').textContent = upcoming.length;
+}
+
+function formatDateDisplay(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', weekday:'short' });
+}
+
+/* ═══════════════════════════════════════
    PADDLE COMPARISON
-═══════════════════════════════════════════════ */
-let selectedPaddles = [];
-let activeFilter = 'all';
+═══════════════════════════════════════ */
+let selectedPaddles = [], activeFilter = 'all';
 
 function renderPaddles() {
   const grid = document.getElementById('paddleGrid');
   grid.innerHTML = '';
-  const filtered = activeFilter === 'all' ? PADDLES : PADDLES.filter(p => p.tags.includes(activeFilter));
-  filtered.forEach(p => {
-    const isSelected = selectedPaddles.includes(p.id);
+  const list = activeFilter === 'all' ? PADDLES : PADDLES.filter(p => p.tags.includes(activeFilter));
+  list.forEach(p => {
+    const sel = selectedPaddles.includes(p.id);
     const card = document.createElement('div');
-    card.className = 'paddle-card' + (isSelected ? ' selected' : '');
+    card.className = 'paddle-card' + (sel ? ' selected' : '');
     card.onclick = () => togglePaddle(p.id);
     card.innerHTML = `
       <div class="paddle-top">
         <div class="paddle-emoji">${p.emoji}</div>
-        <div class="paddle-info">
-          <div class="paddle-name">${p.name}</div>
-          <div class="paddle-brand">${p.brand}</div>
-        </div>
+        <div class="paddle-info"><div class="paddle-name">${p.name}</div><div class="paddle-brand">${p.brand}</div></div>
         <div class="paddle-price">${p.price}</div>
       </div>
-      <div class="paddle-tags">
-        ${p.tagLabels.map((t,i) => `<span class="tag ${p.tagColors[i]}">${t}</span>`).join('')}
-        <span class="tag tag-blue">${p.level}</span>
-      </div>
+      <div class="paddle-tags">${p.tagLabels.map((t,i)=>`<span class="tag ${p.tagColors[i]}">${t}</span>`).join('')}<span class="tag tag-blue">${p.level}</span></div>
       <div class="paddle-stats">
         <div class="pstat"><div class="pstat-val">${p.weight}</div><div class="pstat-lbl">Weight</div></div>
         <div class="pstat"><div class="pstat-val">${p.thickness}</div><div class="pstat-lbl">Thickness</div></div>
         <div class="pstat"><div class="pstat-val">${p.grip}</div><div class="pstat-lbl">Grip</div></div>
       </div>
       <div class="paddle-bars">
-        ${['power','control','spin','touch','reach'].map(attr => `
-          <div class="bar-row">
-            <div class="bar-label">${attr.charAt(0).toUpperCase()+attr.slice(1)}</div>
-            <div class="bar-track"><div class="bar-fill" style="width:${p[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
-            <div class="bar-val">${p[attr]}</div>
-          </div>`).join('')}
+        ${['power','control','spin','touch','reach'].map(a=>`
+        <div class="bar-row">
+          <div class="bar-label">${a.charAt(0).toUpperCase()+a.slice(1)}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${p[a]}%;background:${BAR_COLORS[a]}"></div></div>
+          <div class="bar-val">${p[a]}</div>
+        </div>`).join('')}
       </div>`;
     grid.appendChild(card);
   });
 }
 
 function togglePaddle(id) {
-  if (selectedPaddles.includes(id)) {
-    selectedPaddles = selectedPaddles.filter(x => x !== id);
-  } else if (selectedPaddles.length < 2) {
-    selectedPaddles.push(id);
-  } else {
-    selectedPaddles.shift();
-    selectedPaddles.push(id);
-  }
-  renderPaddles();
-  updateCompareDrawer();
+  if (selectedPaddles.includes(id)) { selectedPaddles = selectedPaddles.filter(x=>x!==id); }
+  else if (selectedPaddles.length < 2) { selectedPaddles.push(id); }
+  else { selectedPaddles.shift(); selectedPaddles.push(id); }
+  renderPaddles(); updateCompareDrawer();
 }
 
 function updateCompareDrawer() {
   const drawer = document.getElementById('compareDrawer');
-  const btn    = document.getElementById('compareNowBtn');
-  if (selectedPaddles.length > 0) {
-    drawer.classList.add('open');
-  } else {
-    drawer.classList.remove('open');
-  }
+  selectedPaddles.length > 0 ? drawer.classList.add('open') : drawer.classList.remove('open');
   [0,1].forEach(i => {
     const slot = document.getElementById('slot'+i);
     const pid  = selectedPaddles[i];
     if (pid) {
-      const p = PADDLES.find(x => x.id === pid);
+      const p = PADDLES.find(x=>x.id===pid);
       slot.classList.add('filled');
       slot.innerHTML = `<span style="font-size:20px">${p.emoji}</span><div class="cslot-name">${p.name.split(' ').slice(0,2).join(' ')}</div><div class="cslot-price">${p.price}</div><div class="cslot-rm" onclick="removePaddle(event,${pid})">✕</div>`;
     } else {
@@ -841,116 +948,79 @@ function updateCompareDrawer() {
       slot.innerHTML = `<span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div>`;
     }
   });
-  btn.disabled = selectedPaddles.length < 2;
+  document.getElementById('compareNowBtn').disabled = selectedPaddles.length < 2;
 }
 
 function removePaddle(e, id) {
   e.stopPropagation();
-  selectedPaddles = selectedPaddles.filter(x => x !== id);
-  renderPaddles();
-  updateCompareDrawer();
+  selectedPaddles = selectedPaddles.filter(x=>x!==id);
+  renderPaddles(); updateCompareDrawer();
 }
 
 function openCompareModal() {
   if (selectedPaddles.length < 2) return;
-  const [a, b] = selectedPaddles.map(id => PADDLES.find(p => p.id === id));
-  const table = document.getElementById('compareTable');
-  const attrs = [
-    {label:'Price',   va: a.price,     vb: b.price},
-    {label:'Material',va: a.material,  vb: b.material},
-    {label:'Type',    va: a.type,      vb: b.type},
-    {label:'Size',    va: a.size,      vb: b.size},
-    {label:'Weight',  va: a.weight,    vb: b.weight},
-    {label:'Thickness',va:a.thickness, vb: b.thickness},
-    {label:'Grip',    va: a.grip,      vb: b.grip},
-    {label:'Core',    va: a.core,      vb: b.core},
-    {label:'Level',   va: a.level,     vb: b.level},
+  const [a, b] = selectedPaddles.map(id => PADDLES.find(p=>p.id===id));
+  const rows = [
+    {label:'Price',va:a.price,vb:b.price},{label:'Material',va:a.material,vb:b.material},
+    {label:'Type',va:a.type,vb:b.type},{label:'Size',va:a.size,vb:b.size},
+    {label:'Weight',va:a.weight,vb:b.weight},{label:'Thickness',va:a.thickness,vb:b.thickness},
+    {label:'Grip',va:a.grip,vb:b.grip},{label:'Core',va:a.core,vb:b.core},{label:'Level',va:a.level,vb:b.level}
   ];
-  const bars = ['power','control','spin','touch','reach'];
-
-  table.innerHTML = `
-    <div class="ct-header">
-      <div></div>
-      <div class="ct-head">${a.emoji} ${a.name.split(' ').slice(0,2).join(' ')}</div>
-      <div class="ct-head">${b.emoji} ${b.name.split(' ').slice(0,2).join(' ')}</div>
-    </div>
-    ${attrs.map(r => `
-      <div class="ct-row">
-        <div class="ct-attr">${r.label}</div>
-        <div class="ct-val">${r.va}</div>
-        <div class="ct-val">${r.vb}</div>
-      </div>`).join('')}
-    <div style="height:12px"></div>
-    ${bars.map(attr => `
-      <div class="ct-row">
-        <div class="ct-attr">${attr.charAt(0).toUpperCase()+attr.slice(1)}</div>
-        <div class="ct-bar-wrap ${a[attr] > b[attr] ? 'best' : a[attr] < b[attr] ? 'worst' : ''}">
-          <div style="font-size:13px;font-weight:700">${a[attr]}</div>
-          <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${a[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
-        </div>
-        <div class="ct-bar-wrap ${b[attr] > a[attr] ? 'best' : b[attr] < a[attr] ? 'worst' : ''}">
-          <div style="font-size:13px;font-weight:700">${b[attr]}</div>
-          <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${b[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
-        </div>
-      </div>`).join('')}
+  document.getElementById('compareTable').innerHTML = `
+    <div class="ct-header"><div></div><div class="ct-head">${a.emoji} ${a.name.split(' ').slice(0,2).join(' ')}</div><div class="ct-head">${b.emoji} ${b.name.split(' ').slice(0,2).join(' ')}</div></div>
+    ${rows.map(r=>`<div class="ct-row"><div class="ct-attr">${r.label}</div><div class="ct-val">${r.va}</div><div class="ct-val">${r.vb}</div></div>`).join('')}
+    <div style="height:10px"></div>
+    ${['power','control','spin','touch','reach'].map(attr=>`
+    <div class="ct-row">
+      <div class="ct-attr">${attr.charAt(0).toUpperCase()+attr.slice(1)}</div>
+      <div class="ct-bar-wrap ${a[attr]>b[attr]?'best':a[attr]<b[attr]?'worst':''}">
+        <div style="font-size:13px;font-weight:700">${a[attr]}</div>
+        <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${a[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
+      </div>
+      <div class="ct-bar-wrap ${b[attr]>a[attr]?'best':b[attr]<a[attr]?'worst':''}">
+        <div style="font-size:13px;font-weight:700">${b[attr]}</div>
+        <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${b[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
+      </div>
+    </div>`).join('')}
     <div style="height:16px"></div>`;
-
-  document.getElementById('compareModal').classList.add('open');
+  document.getElementById('compareModalOverlay').classList.add('open');
 }
 
-function closeCompareModal() {
-  document.getElementById('compareModal').classList.remove('open');
-}
+function closeCompareModal() { document.getElementById('compareModalOverlay').classList.remove('open'); }
 
-// Filter pills
 document.getElementById('filterPills').addEventListener('click', e => {
   const pill = e.target.closest('.pill');
   if (!pill) return;
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
   pill.classList.add('active');
   activeFilter = pill.dataset.filter;
   renderPaddles();
 });
 
-/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════
    MAP
-═══════════════════════════════════════════════ */
-let map, markerLayer;
-
-const UTIL_COLORS = { low: '#34C759', medium: '#FF9500', high: '#FF3B30' };
+═══════════════════════════════════════ */
+let map, currentCourt;
+const UTIL_COLORS = { low:'#34C759', medium:'#FF9500', high:'#FF3B30' };
 
 function makeIcon(util) {
   const c = UTIL_COLORS[util];
-  return L.divIcon({
-    className: '',
-    html: `<div style="width:32px;height:32px;background:${c};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:14px;">🏓</div>`,
-    iconSize:   [32,32],
-    iconAnchor: [16,16],
-    popupAnchor:[0,-20]
-  });
+  return L.divIcon({ className:'', html:`<div style="width:32px;height:32px;background:${c};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:13px;">🏓</div>`, iconSize:[32,32], iconAnchor:[16,16], popupAnchor:[0,-20] });
 }
 
 function initMap() {
-  map = L.map('map', { zoomControl: false, attributionControl: false }).setView([32.78, -117.17], 12);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '©OpenStreetMap ©CARTO', maxZoom: 19
-  }).addTo(map);
-
-  L.control.attribution({ prefix: false, position: 'bottomright' }).addTo(map);
-  L.control.zoom({ position: 'bottomright' }).addTo(map);
-
-  markerLayer = L.layerGroup().addTo(map);
-  COURTS.forEach(court => addCourtMarker(court));
-}
-
-function addCourtMarker(court) {
-  const m = L.marker([court.lat, court.lng], { icon: makeIcon(court.util) })
-    .addTo(markerLayer)
-    .bindPopup(`<b>${court.name}</b><br><small style="color:#636366">${court.util.toUpperCase()} utilization · ${court.courts} courts</small>`);
-  m.on('click', () => openCourt(court));
+  map = L.map('map', { zoomControl:false, attributionControl:false }).setView([32.78,-117.17],12);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(map);
+  L.control.zoom({ position:'bottomright' }).addTo(map);
+  COURTS.forEach(c => {
+    const m = L.marker([c.lat,c.lng],{icon:makeIcon(c.util)}).addTo(map)
+      .bindPopup(`<b>${c.name}</b><br><small style="color:#636366">${c.util.toUpperCase()} utilization · ${c.courts} courts</small>`);
+    m.on('click', () => openCourt(c));
+  });
 }
 
 function openCourt(court) {
+  currentCourt = court;
   document.getElementById('pName').textContent    = court.name;
   document.getElementById('pAddr').textContent    = court.addr;
   document.getElementById('pRating').textContent  = court.rating;
@@ -958,85 +1028,392 @@ function openCourt(court) {
   document.getElementById('pCourts').textContent  = `${court.avail} of ${court.courts}`;
   document.getElementById('pSurface').textContent = court.surface;
   document.getElementById('pLighting').textContent= court.lighting ? 'Yes ✓' : 'No ✗';
-
-  // Stars
   const full = Math.round(court.rating);
-  document.getElementById('pStars').textContent = '★'.repeat(full) + '☆'.repeat(5-full);
-
-  // Gauge
-  const pct = court.utilPct;
-  document.getElementById('gaugeThumb').style.left = pct + '%';
+  document.getElementById('pStars').textContent   = '★'.repeat(full)+'☆'.repeat(5-full);
+  document.getElementById('gaugeThumb').style.left= court.utilPct+'%';
   const badge = document.getElementById('utilBadge');
-  const valEl = document.getElementById('utilVal');
-  valEl.textContent = court.util.charAt(0).toUpperCase() + court.util.slice(1);
   badge.className = 'util-badge badge-' + court.util;
-
-  // Wait time
-  const wait = court.util === 'low' ? 'No wait' : court.util === 'medium' ? '~10 min' : '~25 min';
-  document.getElementById('pWait').textContent = wait;
-
-  // Weekly heatmap
+  document.getElementById('utilVal').textContent  = court.util.charAt(0).toUpperCase()+court.util.slice(1);
+  document.getElementById('pWait').textContent    = court.util==='low'?'No wait':court.util==='medium'?'~10 min':'~25 min';
   buildHeatmap(court);
   document.getElementById('courtPanel').classList.add('open');
 }
 
-function closeCourt() {
-  document.getElementById('courtPanel').classList.remove('open');
-}
+function closeCourt() { document.getElementById('courtPanel').classList.remove('open'); }
 
 function buildHeatmap(court) {
-  const days = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  const days=['Mo','Tu','We','Th','Fr','Sa','Su'];
   const grid = document.getElementById('utilGrid');
-  grid.innerHTML = '';
-  days.forEach((d, di) => {
+  grid.innerHTML='';
+  days.forEach((d,di) => {
     const col = document.createElement('div');
-    col.className = 'util-day';
-    col.innerHTML = `<div class="util-day-lbl">${d}</div><div class="util-hours" id="hours-${di}"></div>`;
-    grid.appendChild(col);
+    col.className='util-day';
+    col.innerHTML=`<div class="util-day-lbl">${d}</div><div class="util-hours"></div>`;
     const hoursEl = col.querySelector('.util-hours');
-    // 12 hour blocks (6am–6pm)
-    for (let h = 0; h < 12; h++) {
-      const slot = document.createElement('div');
-      slot.className = 'util-slot';
-      const base = court.utilPct;
-      const variance = Math.random() * 40 - 20;
-      const morning = (h < 2 || h > 9) ? -25 : 0;
-      const weekend = (di >= 5) ? 20 : 0;
-      const raw = base + variance + morning + weekend;
-      const v = Math.max(5, Math.min(99, raw));
-      const cls = v < 35 ? 'util-low' : v < 65 ? 'util-med' : 'util-high';
-      slot.classList.add(cls);
+    for(let h=0;h<12;h++){
+      const slot=document.createElement('div');
+      slot.className='util-slot';
+      const base=court.utilPct, v=Math.max(5,Math.min(99,base+(Math.random()*40-20)+(h<2||h>9?-25:0)+(di>=5?20:0)));
+      slot.classList.add(v<35?'util-low':v<65?'util-med':'util-high');
       hoursEl.appendChild(slot);
     }
+    grid.appendChild(col);
   });
+}
+
+function openDirections() {
+  if (!currentCourt) return;
+  window.open(`https://maps.google.com/?q=${encodeURIComponent(currentCourt.addr)}`,'_blank');
 }
 
 function searchLocation() {
   const q = document.getElementById('searchInput').value.trim();
   if (!q) return;
-  // Simple geocode via Nominatim
   fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`)
-    .then(r => r.json())
-    .then(data => {
-      if (data.length) {
-        const { lat, lon } = data[0];
-        map.flyTo([parseFloat(lat), parseFloat(lon)], 13, { duration: 1.2 });
-      } else {
-        alert('Location not found. Try another search.');
-      }
-    })
-    .catch(() => alert('Search failed. Check your connection.'));
+    .then(r=>r.json()).then(data => {
+      if (data.length) map.flyTo([parseFloat(data[0].lat),parseFloat(data[0].lon)],13,{duration:1.2});
+      else alert('Location not found.');
+    }).catch(()=>alert('Search failed.'));
+}
+document.getElementById('searchInput').addEventListener('keydown',e=>{ if(e.key==='Enter') searchLocation(); });
+
+/* ═══════════════════════════════════════
+   BOOKING MODAL — OPEN / CLOSE
+═══════════════════════════════════════ */
+function openBookingFromCourt() {
+  if (!currentCourt) return;
+  bookingState = { court:currentCourt, step:0, selectedDate:null, duration:60, players:2, timeSlot:null, courtNum:null, rental:'none', couponApplied:false };
+  resetBookingUI();
+  document.getElementById('bookingCourtTitle').textContent = currentCourt.name.split(' ').slice(0,3).join(' ');
+  document.getElementById('bookingCourtSub').textContent   = currentCourt.addr;
+  document.getElementById('bookingModal').classList.add('open');
+  initCalendar();
+  generateCourtOptions();
 }
 
-// Enter key search
-document.getElementById('searchInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') searchLocation();
+function openBookingModal(courtId) {
+  const court = COURTS.find(c=>c.id===courtId) || COURTS[0];
+  currentCourt = court;
+  openBookingFromCourt();
+}
+
+function closeBookingModal() {
+  document.getElementById('bookingModal').classList.remove('open');
+  setTimeout(resetBookingUI, 400);
+}
+
+function goToBookings() {
+  closeBookingModal();
+  setTimeout(()=>{ switchTab('bookings'); }, 350);
+}
+
+function resetBookingUI() {
+  document.getElementById('bookingStepsWrapper').style.display='block';
+  document.getElementById('successScreen').classList.remove('show');
+  goStep(0, true);
+  // Reset option pills
+  document.querySelectorAll('#durationPills .option-pill').forEach((p,i)=>{ p.classList.toggle('selected',i===0); });
+  document.querySelectorAll('#playerPills .option-pill').forEach((p,i)=>{ p.classList.toggle('selected',i===1); });
+  document.querySelectorAll('#rentalPills .option-pill').forEach((p,i)=>{ p.classList.toggle('selected',i===0); });
+  document.getElementById('couponInput').value='';
+  document.getElementById('step1Next').disabled=true;
+  document.getElementById('step2Next').disabled=true;
+  bookingState.duration=60; bookingState.players=2; bookingState.rental='none';
+  bookingState.selectedDate=null; bookingState.timeSlot=null; bookingState.courtNum=null; bookingState.couponApplied=false;
+}
+
+/* ═══════════════════════════════════════
+   BOOKING STEPS
+═══════════════════════════════════════ */
+function goStep(n, silent=false) {
+  const prev = bookingState.step;
+  bookingState.step = n;
+  document.querySelectorAll('.step-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+
+  // Update step indicator
+  for (let i=0;i<4;i++){
+    const dot  = document.getElementById('sdot'+i);
+    const lbl  = document.getElementById('slbl'+i);
+    if (i<n)       { dot.className='step-dot done'; dot.textContent='✓'; lbl.className='step-lbl'; }
+    else if (i===n){ dot.className='step-dot active'; dot.textContent=(i+1); lbl.className='step-lbl active'; }
+    else           { dot.className='step-dot future'; dot.textContent=(i+1); lbl.className='step-lbl'; }
+    if (i<3) {
+      const line = document.getElementById('sline'+i);
+      if (line) line.className = 'step-line' + (i<n?' done':'');
+    }
+  }
+  if (n===1 && !silent) generateTimeSlots();
+  if (n===3 && !silent) buildSummary();
+  // Scroll modal to top
+  document.getElementById('bookingSheet').scrollTop=0;
+}
+
+/* ─── CALENDAR ─── */
+function initCalendar() {
+  const now = new Date();
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCal();
+}
+
+function calNav(dir) {
+  calMonth += dir;
+  if (calMonth>11){calMonth=0;calYear++;}
+  if (calMonth<0){calMonth=11;calYear--;}
+  renderCal();
+}
+
+function renderCal() {
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonthLabel').textContent=months[calMonth]+' '+calYear;
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  const dows=['S','M','T','W','T','F','S'];
+  dows.forEach(d=>{ const el=document.createElement('div'); el.className='cal-dow'; el.textContent=d; grid.appendChild(el); });
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<firstDay;i++){ const el=document.createElement('div'); el.className='cal-day empty'; grid.appendChild(el); }
+  for(let d=1;d<=daysInMonth;d++){
+    const el=document.createElement('div');
+    const thisDate=new Date(calYear,calMonth,d);
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    el.className='cal-day';
+    if(thisDate<today) el.classList.add('past');
+    if(thisDate.toDateString()===today.toDateString()) el.classList.add('today');
+    if(bookingState.selectedDate===dateStr) el.classList.add('selected');
+    if(thisDate>=today && d%3!==0) el.classList.add('has-avail');
+    el.textContent=d;
+    if(!el.classList.contains('past')){
+      el.onclick=()=>{
+        bookingState.selectedDate=dateStr;
+        renderCal();
+        document.getElementById('step0Next').disabled=false;
+      };
+    }
+    grid.appendChild(el);
+  }
+}
+
+// Duration pills
+document.getElementById('durationPills').addEventListener('click',e=>{
+  const pill=e.target.closest('.option-pill');
+  if(!pill)return;
+  document.querySelectorAll('#durationPills .option-pill').forEach(p=>p.classList.remove('selected'));
+  pill.classList.add('selected');
+  bookingState.duration=parseInt(pill.dataset.dur);
 });
 
-/* ═══════════════════════════════════════════════
+// Player pills
+document.getElementById('playerPills').addEventListener('click',e=>{
+  const pill=e.target.closest('.option-pill');
+  if(!pill)return;
+  document.querySelectorAll('#playerPills .option-pill').forEach(p=>p.classList.remove('selected'));
+  pill.classList.add('selected');
+  bookingState.players=parseInt(pill.dataset.players);
+});
+
+// Rental pills
+document.getElementById('rentalPills').addEventListener('click',e=>{
+  const pill=e.target.closest('.option-pill');
+  if(!pill)return;
+  document.querySelectorAll('#rentalPills .option-pill').forEach(p=>p.classList.remove('selected'));
+  pill.classList.add('selected');
+  bookingState.rental=pill.dataset.rental;
+});
+
+/* ─── TIME SLOTS ─── */
+function generateTimeSlots() {
+  const court=bookingState.court;
+  const AM  =[{t:'7:00 AM',avail:true,limited:false},{t:'8:00 AM',avail:true,limited:false},{t:'9:00 AM',avail:true,limited:true},{t:'10:00 AM',avail:true,limited:false},{t:'11:00 AM',avail:court.util!=='high',limited:court.util==='medium'}];
+  const PM  =[{t:'12:00 PM',avail:true,limited:false},{t:'1:00 PM',avail:court.util!=='high',limited:court.util==='medium'},{t:'2:00 PM',avail:true,limited:court.util!=='low'},{t:'3:00 PM',avail:court.util==='low',limited:false},{t:'4:00 PM',avail:true,limited:true},{t:'5:00 PM',avail:court.util!=='high',limited:false}];
+  const Eve =[{t:'6:00 PM',avail:true,limited:false},{t:'7:00 PM',avail:court.lighting,limited:false},{t:'8:00 PM',avail:court.lighting,limited:court.lighting}];
+
+  function renderSlots(containerId, slots){
+    const el=document.getElementById(containerId); el.innerHTML='';
+    slots.forEach(s=>{
+      const div=document.createElement('div');
+      div.className='time-slot'+(s.selected?' selected':'')+(s.avail?'':' unavail')+(s.limited?' limited':'');
+      div.innerHTML=`<div class="ts-time">${s.t}</div><div class="ts-avail">${s.avail?(s.limited?'Last spot!':'Available'):'Full'}</div>`;
+      if(s.avail){
+        div.onclick=()=>{
+          document.querySelectorAll('.time-slot').forEach(x=>x.classList.remove('selected'));
+          div.classList.add('selected');
+          bookingState.timeSlot=s.t;
+          document.getElementById('step1Next').disabled=false;
+        };
+      }
+      el.appendChild(div);
+    });
+  }
+  renderSlots('slotsAM',AM); renderSlots('slotsPM',PM); renderSlots('slotsEve',Eve);
+}
+
+/* ─── COURT OPTIONS ─── */
+function generateCourtOptions() {
+  const court=bookingState.court;
+  const el=document.getElementById('courtOptions'); el.innerHTML='';
+  const n=Math.min(court.avail,4);
+  for(let i=1;i<=n;i++){
+    const div=document.createElement('div');
+    div.className='court-option'+(bookingState.courtNum===i?' selected':'');
+    div.innerHTML=`<div class="court-num">#${i}</div><div><div class="court-opt-label">Court ${i}</div><div class="court-opt-sub">${court.surface} · ${i<=2?'Premium':'Standard'} position</div></div><div style="color:var(--label4);font-size:14px">›</div>`;
+    div.onclick=()=>{
+      document.querySelectorAll('.court-option').forEach(x=>x.classList.remove('selected'));
+      div.classList.add('selected');
+      bookingState.courtNum=i;
+      document.getElementById('step2Next').disabled=false;
+    };
+    el.appendChild(div);
+  }
+}
+
+/* ─── SUMMARY ─── */
+function buildSummary(){
+  const court=bookingState.court;
+  const rentalLabels={none:'None',paddle:'Paddle',balls:'Balls',both:'Paddle + Balls'};
+  const rentalCosts={none:0,paddle:5,balls:2,both:7};
+  const courtFee=(bookingState.duration/60)*court.pricePerHr;
+  const rentalFee=rentalCosts[bookingState.rental];
+  const booking=1.50;
+  let total=courtFee+rentalFee+booking;
+  if(bookingState.couponApplied) total*=0.9;
+
+  document.getElementById('sumCourtName').textContent=court.name;
+  document.getElementById('sumCourtAddr').textContent=court.addr;
+  document.getElementById('sumDate').textContent=formatDateDisplay(bookingState.selectedDate);
+  document.getElementById('sumTime').textContent=bookingState.timeSlot;
+  document.getElementById('sumDuration').textContent=bookingState.duration>=60?(bookingState.duration/60)+' hour'+(bookingState.duration>60?'s':''):bookingState.duration+' min';
+  document.getElementById('sumPlayers').textContent=bookingState.players+' player'+(bookingState.players>1?'s':'');
+  document.getElementById('sumCourt').textContent='Court '+bookingState.courtNum;
+  document.getElementById('sumRental').textContent=rentalLabels[bookingState.rental];
+  document.getElementById('priceCourtFee').textContent='$'+courtFee.toFixed(2);
+  document.getElementById('priceRental').textContent=rentalFee>0?('$'+rentalFee.toFixed(2)):'Free';
+  document.getElementById('priceTotal').textContent='$'+total.toFixed(2);
+}
+
+function applyCoupon(){
+  const val=document.getElementById('couponInput').value.trim().toUpperCase();
+  if(val==='PICKLE10'&&!bookingState.couponApplied){
+    bookingState.couponApplied=true;
+    buildSummary();
+    document.getElementById('couponInput').style.borderColor='var(--green)';
+    document.getElementById('couponInput').value='PICKLE10 — 10% off applied! ✓';
+  } else if(!val){
+    alert('Please enter a promo code.');
+  } else {
+    alert('Invalid or already used promo code.');
+  }
+}
+
+/* ─── CONFIRM ─── */
+function confirmBooking(){
+  const court=bookingState.court;
+  const rentalLabels={none:'None',paddle:'Paddle (+$5)',balls:'Balls (+$2)',both:'Paddle + Balls (+$7)'};
+  const rentalCosts={none:0,paddle:5,balls:2,both:7};
+  const courtFee=(bookingState.duration/60)*court.pricePerHr;
+  const rentalFee=rentalCosts[bookingState.rental];
+  let total=courtFee+rentalFee+1.5;
+  if(bookingState.couponApplied) total*=0.9;
+  const ref='PKL-'+Math.floor(1000+Math.random()*9000);
+
+  const newBooking={
+    id:ref, courtId:court.id, courtName:court.name, courtAddr:court.addr,
+    date:bookingState.selectedDate, time:bookingState.timeSlot,
+    duration:bookingState.duration, players:bookingState.players,
+    courtNum:'Court '+bookingState.courtNum, rental:rentalLabels[bookingState.rental],
+    total:parseFloat(total.toFixed(2)), status:'confirmed'
+  };
+  bookings.unshift(newBooking);
+
+  // Show success
+  document.getElementById('bookingStepsWrapper').style.display='none';
+  document.getElementById('successRef').textContent=ref;
+  document.getElementById('successDetail').innerHTML=`
+    <div class="sdet-row"><span class="sdet-lbl">Court</span><span class="sdet-val">${court.name.split(' ').slice(0,3).join(' ')}</span></div>
+    <div class="sdet-row"><span class="sdet-lbl">Date & Time</span><span class="sdet-val">${formatDateDisplay(bookingState.selectedDate)} · ${bookingState.timeSlot}</span></div>
+    <div class="sdet-row"><span class="sdet-lbl">Duration</span><span class="sdet-val">${bookingState.duration>=60?(bookingState.duration/60)+' hr':'60 min'}</span></div>
+    <div class="sdet-row"><span class="sdet-lbl">Court #</span><span class="sdet-val">Court ${bookingState.courtNum}</span></div>
+    <div class="sdet-row"><span class="sdet-lbl">Total Paid</span><span class="sdet-val" style="color:var(--green)">$${total.toFixed(2)}</span></div>`;
+  document.getElementById('successScreen').classList.add('show');
+  renderHomeUpcoming();
+}
+
+/* ═══════════════════════════════════════
+   MY BOOKINGS LIST
+═══════════════════════════════════════ */
+let currentBookingTab='upcoming';
+
+function switchBookingTab(tab, btn){
+  currentBookingTab=tab;
+  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderBookingsList(tab);
+}
+
+function renderBookingsList(tab){
+  const el=document.getElementById('bookingsList');
+  const today=new Date(); today.setHours(0,0,0,0);
+  let list;
+  if(tab==='upcoming')   list=bookings.filter(b=>b.status==='confirmed');
+  else if(tab==='past')  list=bookings.filter(b=>b.status==='completed');
+  else                   list=bookings.filter(b=>b.status==='cancelled');
+
+  if(!list.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">${tab==='upcoming'?'📅':tab==='past'?'🏓':'🚫'}</div><div class="empty-title">${tab==='upcoming'?'No Upcoming Bookings':tab==='past'?'No Past Bookings':'No Cancelled Bookings'}</div><div class="empty-desc">${tab==='upcoming'?'Book a court from the Courts tab to get started!':'Your booking history will appear here.'}</div></div>`;
+    return;
+  }
+
+  el.innerHTML=list.map(bk=>`
+    <div class="booking-item">
+      <div class="booking-item-header">
+        <div class="bi-court">${bk.courtName}</div>
+        <div class="bi-status ${bk.status}">${bk.status.charAt(0).toUpperCase()+bk.status.slice(1)}</div>
+      </div>
+      <div class="booking-item-details">
+        <div class="bid"><div class="bid-lbl">DATE</div><div class="bid-val">${formatDateDisplay(bk.date)}</div></div>
+        <div class="bid"><div class="bid-lbl">TIME</div><div class="bid-val">${bk.time}</div></div>
+        <div class="bid"><div class="bid-lbl">DURATION</div><div class="bid-val">${bk.duration>=60?(bk.duration/60)+'hr':'60m'}</div></div>
+        <div class="bid"><div class="bid-lbl">TOTAL</div><div class="bid-val">$${bk.total.toFixed(2)}</div></div>
+      </div>
+      <div class="booking-item-actions">
+        <button class="bi-action" onclick="viewBookingDetail('${bk.id}')">View Details</button>
+        ${bk.status==='confirmed'?`<button class="bi-action" onclick="rescheduleBooking('${bk.id}')">Reschedule</button><button class="bi-action cancel" onclick="cancelBooking('${bk.id}')">Cancel</button>`:''}
+        ${bk.status==='completed'?`<button class="bi-action" onclick="rebookCourt(${bk.courtId})">Book Again</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function viewBookingDetail(id){
+  const bk=bookings.find(b=>b.id===id);
+  if(!bk)return;
+  alert(`📋 Booking ${bk.id}\n\n🏟 ${bk.courtName}\n📅 ${formatDateDisplay(bk.date)} at ${bk.time}\n⏱ ${bk.duration>=60?(bk.duration/60)+' hour(s)':bk.duration+' min'}\n👥 ${bk.players} player(s)\n🏓 ${bk.courtNum}\n🎒 Rental: ${bk.rental}\n💰 Total: $${bk.total.toFixed(2)}\n✅ Status: ${bk.status}`);
+}
+
+function cancelBooking(id){
+  if(!confirm('Cancel this booking? This cannot be undone.'))return;
+  const bk=bookings.find(b=>b.id===id);
+  if(bk){ bk.status='cancelled'; renderBookingsList('upcoming'); renderHomeUpcoming(); }
+}
+
+function rescheduleBooking(id){
+  const bk=bookings.find(b=>b.id===id);
+  if(!bk)return;
+  const court=COURTS.find(c=>c.id===bk.courtId);
+  if(court){ currentCourt=court; openBookingFromCourt(); }
+}
+
+function rebookCourt(courtId){
+  const court=COURTS.find(c=>c.id===courtId);
+  if(court){ currentCourt=court; openBookingFromCourt(); }
+}
+
+/* ═══════════════════════════════════════
    INIT
-═══════════════════════════════════════════════ */
+═══════════════════════════════════════ */
 renderPaddles();
+renderHomeUpcoming();
+renderBookingsList('upcoming');
 </script>
 </body>
 </html>
