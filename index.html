@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PicklePro</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ───────────────────────────── RESET & ROOT ───────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #F2F2F7;
+      --card:        #FFFFFF;
+      --card2:       #F9F9FB;
+      --sep:         #E5E5EA;
+      --blue:        #007AFF;
+      --blue-light:  #E8F2FF;
+      --green:       #34C759;
+      --orange:      #FF9500;
+      --red:         #FF3B30;
+      --purple:      #AF52DE;
+      --teal:        #5AC8FA;
+      --label:       #1C1C1E;
+      --label2:      #3A3A3C;
+      --label3:      #636366;
+      --label4:      #8E8E93;
+      --radius:      16px;
+      --radius-sm:   10px;
+      --shadow:      0 2px 20px rgba(0,0,0,.08);
+      --shadow-md:   0 4px 30px rgba(0,0,0,.12);
+      --tab-h:       82px;
+      --header-h:    56px;
+    }
+
+    html, body { height: 100%; background: var(--bg); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--label); }
+
+    /* ───────────────────────────── LAYOUT ─────────────────────────────────── */
+    #app { display: flex; flex-direction: column; height: 100vh; max-width: 430px; margin: 0 auto; position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,.18); background: var(--bg); }
+
+    /* ─── HEADER ─── */
+    .app-header {
+      height: var(--header-h);
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--sep);
+      display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 10px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 100;
+    }
+    .app-header h1 { font-size: 17px; font-weight: 700; letter-spacing: -.2px; color: var(--label); }
+    .header-badge { background: var(--blue); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; margin-left: 7px; letter-spacing: .3px; }
+
+    /* ─── SCREENS ─── */
+    .screen { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; padding-bottom: calc(var(--tab-h) + 10px); -webkit-overflow-scrolling: touch; }
+    .screen.active { display: block; }
+
+    /* ─── TAB BAR ─── */
+    .tab-bar {
+      height: var(--tab-h);
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--sep);
+      display: flex; align-items: flex-start; justify-content: space-around;
+      padding-top: 10px;
+      flex-shrink: 0;
+      position: relative; z-index: 100;
+    }
+    .tab-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; padding: 4px 10px; color: var(--label4); transition: color .2s; flex: 1; }
+    .tab-btn.active { color: var(--blue); }
+    .tab-btn svg { width: 26px; height: 26px; }
+    .tab-btn span { font-size: 10px; font-weight: 600; letter-spacing: -.1px; }
+
+    /* ─── TYPOGRAPHY HELPERS ─── */
+    .section-header { padding: 20px 16px 6px; font-size: 20px; font-weight: 800; letter-spacing: -.4px; color: var(--label); }
+    .section-sub    { padding: 0 16px 12px; font-size: 14px; color: var(--label4); }
+
+    /* ─── CARDS ─── */
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .card-inset { background: var(--card2); border-radius: var(--radius-sm); }
+
+    /* ══════════════════════════════════════════════════════
+       SCREEN 1 — HOME
+    ══════════════════════════════════════════════════════ */
+    #screen-home { padding-top: 6px; }
+
+    .hero-banner {
+      margin: 12px 16px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
+      padding: 22px 20px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,122,255,.35);
+    }
+    .hero-banner::after {
+      content: "🏓";
+      font-size: 80px;
+      position: absolute;
+      right: -10px; bottom: -14px;
+      opacity: .35;
+      line-height: 1;
+    }
+    .hero-banner h2 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+    .hero-banner p  { font-size: 13px; opacity: .85; margin-top: 4px; line-height: 1.5; }
+    .hero-btn { margin-top: 14px; background: rgba(255,255,255,.22); color: #fff; border: 1.5px solid rgba(255,255,255,.55); border-radius: 30px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-block; backdrop-filter: blur(4px); transition: background .2s; }
+    .hero-btn:active { background: rgba(255,255,255,.38); }
+
+    .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 16px 16px; }
+    .qa-card { background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: transform .15s, box-shadow .15s; }
+    .qa-card:active { transform: scale(.97); box-shadow: none; }
+    .qa-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .qa-title { font-size: 14px; font-weight: 700; color: var(--label); }
+    .qa-desc  { font-size: 12px; color: var(--label4); line-height: 1.4; }
+
+    .stat-row { display: flex; gap: 10px; margin: 0 16px 16px; }
+    .stat-card { flex: 1; background: var(--card); border-radius: var(--radius); padding: 14px 12px; box-shadow: var(--shadow); text-align: center; }
+    .stat-val  { font-size: 26px; font-weight: 800; color: var(--blue); line-height: 1; }
+    .stat-lbl  { font-size: 11px; color: var(--label4); margin-top: 4px; font-weight: 500; }
+
+    .tip-card { margin: 0 16px 20px; background: linear-gradient(135deg,#34C759,#30D158); border-radius: var(--radius); padding: 16px 18px; color: #fff; box-shadow: 0 4px 16px rgba(52,199,89,.3); }
+    .tip-tag  { font-size: 10px; font-weight: 700; letter-spacing: .8px; opacity: .8; margin-bottom: 6px; }
+    .tip-card p { font-size: 14px; font-weight: 500; line-height: 1.55; }
+
+    /* ══════════════════════════════════════════════════════
+       SCREEN 2 — PADDLE COMPARISON
+    ══════════════════════════════════════════════════════ */
+    #screen-compare { padding-top: 6px; }
+
+    /* Filter Pills */
+    .filter-scroll { overflow-x: auto; white-space: nowrap; padding: 6px 16px 12px; -webkit-overflow-scrolling: touch; }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    .pill { display: inline-flex; align-items: center; gap: 5px; background: var(--card); border: 1.5px solid var(--sep); border-radius: 30px; padding: 7px 14px; font-size: 13px; font-weight: 600; color: var(--label3); cursor: pointer; margin-right: 8px; transition: all .2s; }
+    .pill.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+    /* Paddle Cards Grid */
+    .paddles-grid { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 10px; }
+    .paddle-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .paddle-card:active { transform: scale(.98); box-shadow: none; }
+    .paddle-card.selected { border: 2px solid var(--blue); box-shadow: 0 4px 20px rgba(0,122,255,.2); }
+
+    .paddle-top { padding: 14px 16px 12px; display: flex; align-items: center; gap: 14px; }
+    .paddle-emoji { font-size: 36px; width: 60px; height: 60px; background: var(--bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .paddle-info { flex: 1; }
+    .paddle-name  { font-size: 16px; font-weight: 700; color: var(--label); }
+    .paddle-brand { font-size: 13px; color: var(--label4); margin-top: 1px; }
+    .paddle-price { font-size: 18px; font-weight: 800; color: var(--blue); }
+
+    .paddle-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
+    .tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+    .tag-blue   { background: var(--blue-light);  color: var(--blue);  }
+    .tag-green  { background: #E8F8EC; color: var(--green); }
+    .tag-orange { background: #FFF4E5; color: var(--orange); }
+    .tag-purple { background: #F3E8FC; color: var(--purple); }
+
+    .paddle-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--sep); }
+    .pstat { text-align: center; padding: 10px 8px; border-right: 1px solid var(--sep); }
+    .pstat:last-child { border-right: none; }
+    .pstat-val { font-size: 15px; font-weight: 700; color: var(--label); }
+    .pstat-lbl { font-size: 10px; color: var(--label4); margin-top: 2px; }
+
+    /* Bar meter */
+    .paddle-bars { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: flex; align-items: center; gap: 8px; }
+    .bar-label { font-size: 12px; color: var(--label3); width: 60px; flex-shrink: 0; }
+    .bar-track { flex: 1; background: var(--bg); border-radius: 99px; height: 7px; overflow: hidden; }
+    .bar-fill  { height: 100%; border-radius: 99px; transition: width .6s ease; }
+    .bar-val   { font-size: 12px; font-weight: 700; color: var(--label3); width: 28px; text-align: right; }
+
+    /* Compare Drawer */
+    .compare-drawer {
+      position: fixed; bottom: var(--tab-h); left: 50%; transform: translateX(-50%) translateY(100%);
+      width: 100%; max-width: 430px;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--sep);
+      border-radius: 20px 20px 0 0;
+      padding: 16px;
+      z-index: 200;
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 -4px 30px rgba(0,0,0,.12);
+    }
+    .compare-drawer.open { transform: translateX(-50%) translateY(0); }
+    .compare-drawer-title { text-align: center; font-size: 12px; font-weight: 700; color: var(--label4); letter-spacing: .5px; margin-bottom: 12px; }
+    .compare-slots { display: flex; gap: 8px; margin-bottom: 12px; }
+    .cslot { flex: 1; background: var(--bg); border-radius: 12px; padding: 10px; text-align: center; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed var(--sep); position: relative; }
+    .cslot.filled { border: 2px solid var(--blue); background: var(--blue-light); }
+    .cslot-name { font-size: 12px; font-weight: 600; color: var(--label); }
+    .cslot-price{ font-size: 11px; color: var(--blue); }
+    .cslot-rm   { position: absolute; top: 4px; right: 6px; font-size: 15px; color: var(--red); cursor: pointer; }
+    .compare-now-btn { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: var(--radius-sm); padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: -.1px; }
+    .compare-now-btn:disabled { background: var(--sep); color: var(--label4); cursor: not-allowed; }
+
+    /* Compare Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; align-items: flex-end; max-width: 430px; margin: 0 auto; left: 50%; transform: translateX(-50%); }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet { width: 100%; background: var(--card); border-radius: 24px 24px 0 0; max-height: 90vh; overflow-y: auto; padding-bottom: 30px; animation: slideUp .35s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-handle { width: 36px; height: 4px; background: var(--sep); border-radius: 99px; margin: 12px auto 16px; }
+    .modal-title  { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 16px; color: var(--label); }
+    .modal-close  { position: absolute; right: 16px; top: 20px; width: 28px; height: 28px; background: var(--bg); border-radius: 50%; border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--label3); }
+    .modal-sheet { position: relative; }
+
+    .compare-table { padding: 0 16px; }
+    .ct-header { display: grid; grid-template-columns: 100px 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .ct-head { text-align: center; font-size: 13px; font-weight: 700; color: var(--label); background: var(--bg); border-radius: 10px; padding: 10px 6px; }
+    .ct-row { display: grid; grid-template-columns: 100px 1fr 1fr; gap: 6px; margin-bottom: 8px; align-items: center; }
+    .ct-attr { font-size: 13px; color: var(--label3); font-weight: 500; }
+    .ct-val  { text-align: center; font-size: 14px; font-weight: 700; color: var(--label); background: var(--bg); border-radius: 10px; padding: 10px 6px; }
+    .ct-val.best { background: #E8F8EC; color: var(--green); }
+    .ct-val.worst { background: #FFF4E5; color: var(--orange); }
+    .ct-bar-wrap { text-align: center; background: var(--bg); border-radius: 10px; padding: 8px 10px; }
+    .ct-bar-track { background: var(--sep); border-radius: 99px; height: 6px; overflow: hidden; margin-top: 4px; }
+    .ct-bar-fill  { height: 100%; border-radius: 99px; }
+
+    /* ══════════════════════════════════════════════════════
+       SCREEN 3 — COURT MAP
+    ══════════════════════════════════════════════════════ */
+    #screen-map { display: none; flex-direction: column; padding-bottom: 0; }
+    #screen-map.active { display: flex; }
+
+    .map-search-bar { padding: 10px 16px; flex-shrink: 0; }
+    .search-input-wrap { display: flex; align-items: center; background: var(--card); border-radius: var(--radius-sm); box-shadow: var(--shadow); overflow: hidden; }
+    .search-icon { padding: 0 12px; font-size: 16px; color: var(--label4); }
+    .search-input { flex: 1; border: none; outline: none; padding: 12px 0; font-size: 15px; font-family: inherit; background: transparent; color: var(--label); }
+    .search-input::placeholder { color: var(--label4); }
+    .search-btn { background: var(--blue); color: #fff; border: none; padding: 0 16px; height: 100%; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    #map { flex: 1; min-height: 0; z-index: 1; }
+
+    .map-legend { padding: 8px 16px; background: var(--card); border-top: 1px solid var(--sep); display: flex; align-items: center; gap: 14px; flex-shrink: 0; flex-wrap: wrap; }
+    .legend-title { font-size: 11px; font-weight: 700; color: var(--label4); letter-spacing: .5px; }
+    .legend-item  { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; }
+    .legend-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Court Detail Panel */
+    .court-panel {
+      position: absolute;
+      bottom: calc(var(--tab-h));
+      left: 0; right: 0;
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(20px);
+      border-radius: 24px 24px 0 0;
+      box-shadow: 0 -4px 30px rgba(0,0,0,.15);
+      transform: translateY(100%);
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+      z-index: 400;
+      padding-bottom: 20px;
+      max-height: 70%;
+      overflow-y: auto;
+    }
+    .court-panel.open { transform: translateY(0); }
+    .panel-handle { width: 36px; height: 4px; background: var(--sep); border-radius: 99px; margin: 12px auto 10px; }
+    .panel-close  { position: absolute; top: 14px; right: 16px; width: 28px; height: 28px; background: var(--bg); border: none; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: var(--label3); z-index: 2; }
+
+    .panel-header { padding: 0 16px 12px; }
+    .panel-name   { font-size: 19px; font-weight: 800; color: var(--label); }
+    .panel-addr   { font-size: 13px; color: var(--label4); margin-top: 2px; }
+    .panel-rating { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+    .stars        { color: #FFD60A; font-size: 14px; }
+    .rating-val   { font-size: 14px; font-weight: 700; color: var(--label); }
+    .rating-cnt   { font-size: 13px; color: var(--label4); }
+
+    .util-section { padding: 0 16px 14px; }
+    .util-title   { font-size: 13px; font-weight: 700; color: var(--label4); letter-spacing: .4px; margin-bottom: 10px; }
+    .util-grid    { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+    .util-day     { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .util-day-lbl { font-size: 9px; font-weight: 600; color: var(--label4); }
+    .util-hours   { display: flex; flex-direction: column; gap: 2px; width: 100%; }
+    .util-slot    { height: 8px; border-radius: 2px; }
+    .util-low     { background: var(--green); }
+    .util-med     { background: var(--orange); }
+    .util-high    { background: var(--red); }
+
+    .util-meter-wrap { padding: 0 16px 14px; }
+    .util-meter-title { font-size: 13px; font-weight: 700; color: var(--label4); letter-spacing: .4px; margin-bottom: 10px; }
+    .util-meter { display: flex; align-items: center; gap: 12px; background: var(--bg); border-radius: var(--radius-sm); padding: 14px; }
+    .util-gauge { flex: 1; }
+    .gauge-bar  { height: 14px; border-radius: 99px; background: linear-gradient(90deg, var(--green), var(--orange), var(--red)); position: relative; overflow: visible; }
+    .gauge-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,.25); transition: left .6s ease; }
+    .gauge-labels { display: flex; justify-content: space-between; margin-top: 5px; }
+    .gauge-labels span { font-size: 10px; font-weight: 600; }
+    .util-badge { padding: 8px 14px; border-radius: var(--radius-sm); text-align: center; min-width: 80px; }
+    .util-badge .ub-lbl { font-size: 10px; font-weight: 600; opacity: .7; }
+    .util-badge .ub-val { font-size: 17px; font-weight: 800; }
+    .badge-low  { background: #E8F8EC; color: var(--green);  }
+    .badge-med  { background: #FFF4E5; color: var(--orange); }
+    .badge-high { background: #FFECEB; color: var(--red);    }
+
+    .panel-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 16px 14px; }
+    .pinfo-card { background: var(--bg); border-radius: var(--radius-sm); padding: 12px; }
+    .pinfo-lbl  { font-size: 11px; color: var(--label4); font-weight: 500; }
+    .pinfo-val  { font-size: 15px; font-weight: 700; color: var(--label); margin-top: 2px; }
+
+    .panel-actions { display: flex; gap: 10px; padding: 0 16px; }
+    .action-btn { flex: 1; padding: 13px; border-radius: var(--radius-sm); border: none; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity .2s; }
+    .action-btn:active { opacity: .75; }
+    .btn-primary   { background: var(--blue); color: #fff; }
+    .btn-secondary { background: var(--bg); color: var(--blue); border: 1.5px solid var(--blue); }
+
+    /* ══════════════════════════════════════════════════════
+       SCREEN 4 — PROFILE
+    ══════════════════════════════════════════════════════ */
+    #screen-profile { padding-top: 6px; }
+
+    .profile-header { display: flex; align-items: center; gap: 16px; margin: 12px 16px 20px; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; font-weight: 700; flex-shrink: 0; box-shadow: 0 4px 16px rgba(0,122,255,.3); }
+    .profile-name  { font-size: 20px; font-weight: 800; color: var(--label); }
+    .profile-level { font-size: 13px; color: var(--label4); margin-top: 3px; }
+    .profile-edit  { margin-top: 6px; background: var(--blue-light); color: var(--blue); border: none; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+    .settings-group { margin: 0 16px 16px; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .settings-group-title { padding: 10px 16px 6px; font-size: 12px; font-weight: 700; color: var(--label4); letter-spacing: .5px; background: var(--card); }
+    .setting-row { display: flex; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--sep); gap: 12px; cursor: pointer; }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .setting-text { flex: 1; }
+    .setting-label { font-size: 15px; color: var(--label); font-weight: 500; }
+    .setting-val   { font-size: 13px; color: var(--label4); margin-top: 1px; }
+    .setting-arrow { color: var(--label4); font-size: 14px; }
+    .toggle { width: 50px; height: 28px; background: var(--sep); border-radius: 99px; position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+    .toggle.on { background: var(--green); }
+    .toggle::after { content: ''; width: 24px; height: 24px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+    .toggle.on::after { transform: translateX(22px); }
+
+    .skill-card { margin: 0 16px 16px; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+    .skill-title { font-size: 15px; font-weight: 700; color: var(--label); margin-bottom: 12px; }
+    .skill-row    { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .skill-row:last-child { margin-bottom: 0; }
+    .skill-lbl   { font-size: 13px; color: var(--label3); width: 70px; }
+    .skill-bar-track { flex: 1; background: var(--bg); border-radius: 99px; height: 8px; overflow: hidden; }
+    .skill-bar-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--teal)); }
+    .skill-score { font-size: 13px; font-weight: 700; color: var(--label3); width: 28px; text-align: right; }
+
+    /* ─── Animations ─── */
+    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+    .screen.active > * { animation: fadeIn .3s ease forwards; }
+
+    /* ─── Leaflet overrides ─── */
+    .leaflet-popup-content-wrapper { border-radius: 12px !important; box-shadow: var(--shadow-md) !important; font-family: 'Inter', sans-serif !important; }
+    .leaflet-popup-content { font-size: 13px; color: var(--label); margin: 10px 14px !important; }
+    .leaflet-popup-tip-container { display: none; }
+    .leaflet-control-zoom a { font-family: inherit !important; }
+
+    /* ─── Scrollbar hide ─── */
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ─── HEADER ─── -->
+  <div class="app-header">
+    <h1>PicklePro <span class="header-badge">BETA</span></h1>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 1: HOME
+  ══════════════════════════════════════════════ -->
+  <div id="screen-home" class="screen active">
+
+    <div class="hero-banner">
+      <h2>Welcome Back! 👋</h2>
+      <p>Find courts, compare paddles, and track your game.</p>
+      <div class="hero-btn" onclick="switchTab('map')">Find Courts Near Me →</div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-val">24</div>
+        <div class="stat-lbl">Courts Nearby</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">3.8</div>
+        <div class="stat-lbl">Your DUPR Rating</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">47</div>
+        <div class="stat-lbl">Games Logged</div>
+      </div>
+    </div>
+
+    <div class="section-header">Quick Actions</div>
+    <div class="quick-actions">
+      <div class="qa-card" onclick="switchTab('compare')">
+        <div class="qa-icon" style="background:#E8F2FF">🏓</div>
+        <div class="qa-title">Compare Paddles</div>
+        <div class="qa-desc">Side-by-side paddle analysis</div>
+      </div>
+      <div class="qa-card" onclick="switchTab('map')">
+        <div class="qa-icon" style="background:#E8F8EC">📍</div>
+        <div class="qa-title">Find Courts</div>
+        <div class="qa-desc">Map & utilization data</div>
+      </div>
+      <div class="qa-card" onclick="switchTab('profile')">
+        <div class="qa-icon" style="background:#F3E8FC">👤</div>
+        <div class="qa-title">My Profile</div>
+        <div class="qa-desc">Stats & preferences</div>
+      </div>
+      <div class="qa-card">
+        <div class="qa-icon" style="background:#FFF4E5">📅</div>
+        <div class="qa-title">Book a Court</div>
+        <div class="qa-desc">Reserve your spot</div>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-tag">💡 PRO TIP OF THE DAY</div>
+      <p>"Use a soft dink shot low over the net to force your opponent into the kitchen — it's the foundation of winning strategy!"</p>
+    </div>
+
+  </div><!-- /home -->
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 2: PADDLE COMPARISON
+  ══════════════════════════════════════════════ -->
+  <div id="screen-compare" class="screen">
+
+    <div class="section-header">Paddle Comparison</div>
+    <div class="section-sub">Tap paddles to select (up to 2) and compare side-by-side</div>
+
+    <!-- Filter Pills -->
+    <div class="filter-scroll" id="filterPills">
+      <div class="pill active" data-filter="all">All</div>
+      <div class="pill" data-filter="graphite">Graphite</div>
+      <div class="pill" data-filter="carbon">Carbon Fiber</div>
+      <div class="pill" data-filter="fiberglass">Fiberglass</div>
+      <div class="pill" data-filter="elongated">Elongated</div>
+      <div class="pill" data-filter="standard">Standard</div>
+      <div class="pill" data-filter="power">Power</div>
+      <div class="pill" data-filter="control">Control</div>
+    </div>
+
+    <!-- Paddle Cards -->
+    <div class="paddles-grid" id="paddleGrid"></div>
+
+    <!-- Compare Drawer -->
+    <div class="compare-drawer" id="compareDrawer">
+      <div class="compare-drawer-title">COMPARISON TRAY</div>
+      <div class="compare-slots">
+        <div class="cslot" id="slot0"><span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div></div>
+        <div class="cslot" id="slot1"><span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div></div>
+      </div>
+      <button class="compare-now-btn" id="compareNowBtn" disabled onclick="openCompareModal()">Compare Now</button>
+    </div>
+
+    <!-- Compare Result Modal -->
+    <div class="modal-overlay" id="compareModal">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <button class="modal-close" onclick="closeCompareModal()">✕</button>
+        <div class="modal-title">Head-to-Head</div>
+        <div class="compare-table" id="compareTable"></div>
+      </div>
+    </div>
+
+  </div><!-- /compare -->
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 3: MAP
+  ══════════════════════════════════════════════ -->
+  <div id="screen-map" class="screen" style="position:relative;">
+
+    <div class="map-search-bar">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchInput" type="text" placeholder="Search city or zip code…" />
+        <button class="search-btn" onclick="searchLocation()">Go</button>
+      </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="map-legend">
+      <span class="legend-title">UTILIZATION:</span>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Low</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Medium</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> High</div>
+    </div>
+
+    <!-- Court Detail Panel -->
+    <div class="court-panel" id="courtPanel">
+      <div class="panel-handle"></div>
+      <button class="panel-close" onclick="closeCourt()">✕</button>
+      <div class="panel-header">
+        <div class="panel-name" id="pName">Court Name</div>
+        <div class="panel-addr" id="pAddr">Address</div>
+        <div class="panel-rating">
+          <div class="stars" id="pStars">★★★★☆</div>
+          <div class="rating-val" id="pRating">4.2</div>
+          <div class="rating-cnt" id="pReviews">(128 reviews)</div>
+        </div>
+      </div>
+
+      <!-- Live Utilization Meter -->
+      <div class="util-meter-wrap">
+        <div class="util-meter-title">CURRENT UTILIZATION</div>
+        <div class="util-meter">
+          <div class="util-gauge">
+            <div class="gauge-bar">
+              <div class="gauge-thumb" id="gaugeThumb" style="left:20%"></div>
+            </div>
+            <div class="gauge-labels">
+              <span style="color:var(--green)">Low</span>
+              <span style="color:var(--orange)">Med</span>
+              <span style="color:var(--red)">High</span>
+            </div>
+          </div>
+          <div class="util-badge" id="utilBadge">
+            <div class="ub-lbl">STATUS</div>
+            <div class="ub-val" id="utilVal">Low</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Heatmap -->
+      <div class="util-section">
+        <div class="util-title">WEEKLY HEATMAP (hourly)</div>
+        <div class="util-grid" id="utilGrid"></div>
+      </div>
+
+      <!-- Info Grid -->
+      <div class="panel-info-grid">
+        <div class="pinfo-card">
+          <div class="pinfo-lbl">Courts Available</div>
+          <div class="pinfo-val" id="pCourts">6 of 8</div>
+        </div>
+        <div class="pinfo-card">
+          <div class="pinfo-lbl">Surface Type</div>
+          <div class="pinfo-val" id="pSurface">Asphalt</div>
+        </div>
+        <div class="pinfo-card">
+          <div class="pinfo-lbl">Lighting</div>
+          <div class="pinfo-val" id="pLighting">Yes ✓</div>
+        </div>
+        <div class="pinfo-card">
+          <div class="pinfo-lbl">Wait Time</div>
+          <div class="pinfo-val" id="pWait">~10 min</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="panel-actions">
+        <button class="action-btn btn-primary">🗺 Directions</button>
+        <button class="action-btn btn-secondary">📅 Book Court</button>
+      </div>
+    </div>
+
+  </div><!-- /map -->
+
+  <!-- ══════════════════════════════════════════════
+       SCREEN 4: PROFILE
+  ══════════════════════════════════════════════ -->
+  <div id="screen-profile" class="screen">
+
+    <div class="profile-header">
+      <div class="avatar">JP</div>
+      <div>
+        <div class="profile-name">Jamie Pickle</div>
+        <div class="profile-level">⭐ Intermediate · DUPR 3.8</div>
+        <button class="profile-edit">Edit Profile</button>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-title">🎯 Skill Breakdown</div>
+      <div class="skill-row">
+        <div class="skill-lbl">Dinking</div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:82%"></div></div>
+        <div class="skill-score">8.2</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-lbl">Serving</div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:74%"></div></div>
+        <div class="skill-score">7.4</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-lbl">Volley</div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:68%"></div></div>
+        <div class="skill-score">6.8</div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-lbl">3rd Shot</div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="width:59%"></div></div>
+        <div class="skill-score">5.9</div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-group-title">PREFERENCES</div>
+      <div class="setting-row">
+        <div class="setting-icon" style="background:#E8F2FF">🏏</div>
+        <div class="setting-text">
+          <div class="setting-label">Play Style</div>
+          <div class="setting-val">Control / Dinking</div>
+        </div>
+        <div class="setting-arrow">›</div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon" style="background:#FFF4E5">📍</div>
+        <div class="setting-text">
+          <div class="setting-label">Home Location</div>
+          <div class="setting-val">San Diego, CA</div>
+        </div>
+        <div class="setting-arrow">›</div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon" style="background:#E8F8EC">🔔</div>
+        <div class="setting-text">
+          <div class="setting-label">Court Notifications</div>
+          <div class="setting-val">When low utilization</div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-group-title">ACCOUNT</div>
+      <div class="setting-row">
+        <div class="setting-icon" style="background:#F3E8FC">🔒</div>
+        <div class="setting-text"><div class="setting-label">Privacy & Security</div></div>
+        <div class="setting-arrow">›</div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-icon" style="background:#FFECEB">🚪</div>
+        <div class="setting-text"><div class="setting-label" style="color:var(--red)">Sign Out</div></div>
+        <div class="setting-arrow">›</div>
+      </div>
+    </div>
+
+  </div><!-- /profile -->
+
+  <!-- ─── TAB BAR ─── -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('home')" id="tab-home">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('compare')" id="tab-compare">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      <span>Compare</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('map')" id="tab-map">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      <span>Courts</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('profile')" id="tab-profile">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <span>Profile</span>
+    </button>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ─── LEAFLET ─── -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════ */
+
+const PADDLES = [
+  {
+    id:1, emoji:'🟦', name:'Selkirk SLK Halo', brand:'Selkirk Sport', price:'$189',
+    material:'Carbon Fiber', type:'Elongated', size:'16.5" × 7.375"', weight:'7.8 oz', thickness:'16mm',
+    tags:['carbon','elongated','control'],
+    tagLabels:['Carbon Fiber','Elongated','Control'],
+    tagColors:['tag-blue','tag-purple','tag-green'],
+    power:82, control:94, spin:88, touch:91, reach:95,
+    grip:'4.25"', core:'Polymer Honeycomb', level:'Intermediate–Pro'
+  },
+  {
+    id:2, emoji:'🟩', name:'Joola Ben Johns Hyperion', brand:'Joola', price:'$249',
+    material:'Carbon Fiber', type:'Standard', size:'16" × 8"', weight:'8.0 oz', thickness:'14mm',
+    tags:['carbon','standard','power'],
+    tagLabels:['Carbon Fiber','Standard','Power'],
+    tagColors:['tag-blue','tag-orange','tag-orange'],
+    power:97, control:79, spin:92, touch:76, reach:80,
+    grip:'4.125"', core:'Hyperfoam Edge Wall', level:'Advanced–Pro'
+  },
+  {
+    id:3, emoji:'🟨', name:'Engage Pursuit MX', brand:'Engage Pickleball', price:'$149',
+    material:'Fiberglass', type:'Standard', size:'15.875" × 8.25"', weight:'8.2 oz', thickness:'16mm',
+    tags:['fiberglass','standard','control'],
+    tagLabels:['Fiberglass','Standard','Control'],
+    tagColors:['tag-green','tag-orange','tag-green'],
+    power:75, control:91, spin:80, touch:93, reach:78,
+    grip:'4.5"', core:'Polymer Honeycomb', level:'Beginner–Intermediate'
+  },
+  {
+    id:4, emoji:'🟧', name:'Paddletek Bantam EX-L', brand:'Paddletek', price:'$129',
+    material:'Graphite', type:'Standard', size:'15.75" × 8.25"', weight:'7.4 oz', thickness:'12mm',
+    tags:['graphite','standard','power'],
+    tagLabels:['Graphite','Standard','Power'],
+    tagColors:['tag-purple','tag-orange','tag-orange'],
+    power:88, control:75, spin:84, touch:72, reach:76,
+    grip:'4.25"', core:'Polymer Honeycomb', level:'Beginner–Intermediate'
+  },
+  {
+    id:5, emoji:'🟥', name:'Franklin Ben Johns Signature', brand:'Franklin Sports', price:'$99',
+    material:'Graphite', type:'Elongated', size:'16.5" × 7.5"', weight:'7.9 oz', thickness:'13mm',
+    tags:['graphite','elongated','control'],
+    tagLabels:['Graphite','Elongated','Control'],
+    tagColors:['tag-purple','tag-purple','tag-green'],
+    power:78, control:86, spin:83, touch:85, reach:92,
+    grip:'4.25"', core:'Polymer', level:'All Levels'
+  },
+  {
+    id:6, emoji:'🟪', name:'Head Radical Tour', brand:'HEAD', price:'$169',
+    material:'Fiberglass', type:'Standard', size:'16" × 8"', weight:'8.4 oz', thickness:'16mm',
+    tags:['fiberglass','standard','power'],
+    tagLabels:['Fiberglass','Standard','Power'],
+    tagColors:['tag-green','tag-orange','tag-orange'],
+    power:90, control:82, spin:77, touch:80, reach:79,
+    grip:'4.125"', core:'Power Foam', level:'Intermediate–Advanced'
+  }
+];
+
+const BAR_COLORS = {
+  power:   '#FF9500',
+  control: '#007AFF',
+  spin:    '#AF52DE',
+  touch:   '#34C759',
+  reach:   '#5AC8FA'
+};
+
+const COURTS = [
+  { id:1, name:'Balboa Park Pickleball Complex', addr:'2000 Pan American Rd, San Diego, CA', lat:32.731, lng:-117.148, rating:4.8, reviews:342, courts:8, avail:6, surface:'Hard Court', lighting:true, util:'low',    utilPct:20 },
+  { id:2, name:'Morley Field Sports Complex',   addr:'2221 Morley Field Dr, San Diego, CA',  lat:32.742, lng:-117.144, rating:4.5, reviews:219, courts:12, avail:9, surface:'Asphalt', lighting:true, util:'medium', utilPct:55 },
+  { id:3, name:'Miramar Reservoir Park',         addr:'8200 Scripps Ranch Rd, San Diego, CA', lat:32.906, lng:-117.113, rating:4.2, reviews:87,  courts:4,  avail:1, surface:'Concrete', lighting:false,util:'high',   utilPct:88 },
+  { id:4, name:'Robb Field Athletic Area',       addr:'2525 Bacon St, San Diego, CA',          lat:32.755, lng:-117.237, rating:4.6, reviews:173, courts:6,  avail:5, surface:'Hard Court', lighting:true, util:'low',    utilPct:15 },
+  { id:5, name:'Nobel Athletic Area',            addr:'8282 Clairmont Mesa Blvd, San Diego',   lat:32.847, lng:-117.208, rating:4.0, reviews:56,  courts:4,  avail:2, surface:'Asphalt', lighting:false,util:'high',   utilPct:80 },
+  { id:6, name:'Chollas Lake Park Courts',       addr:'6350 Chollas Pkwy, San Diego, CA',       lat:32.710, lng:-117.090, rating:4.3, reviews:128, courts:6,  avail:4, surface:'Hard Court', lighting:true, util:'medium', utilPct:50 },
+  { id:7, name:'Sunset Cliffs Pickle Club',      addr:'4030 Orchard Ave, San Diego, CA',        lat:32.726, lng:-117.258, rating:4.7, reviews:201, courts:5,  avail:5, surface:'Concrete', lighting:true, util:'low',    utilPct:10 },
+];
+
+/* ═══════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════ */
+let mapInited = false;
+
+function switchTab(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const s = document.getElementById('screen-'+name);
+  if (s) s.classList.add('active');
+  const b = document.getElementById('tab-'+name);
+  if (b) b.classList.add('active');
+  if (name === 'map' && !mapInited) { initMap(); mapInited = true; }
+}
+
+/* ═══════════════════════════════════════════════
+   PADDLE COMPARISON
+═══════════════════════════════════════════════ */
+let selectedPaddles = [];
+let activeFilter = 'all';
+
+function renderPaddles() {
+  const grid = document.getElementById('paddleGrid');
+  grid.innerHTML = '';
+  const filtered = activeFilter === 'all' ? PADDLES : PADDLES.filter(p => p.tags.includes(activeFilter));
+  filtered.forEach(p => {
+    const isSelected = selectedPaddles.includes(p.id);
+    const card = document.createElement('div');
+    card.className = 'paddle-card' + (isSelected ? ' selected' : '');
+    card.onclick = () => togglePaddle(p.id);
+    card.innerHTML = `
+      <div class="paddle-top">
+        <div class="paddle-emoji">${p.emoji}</div>
+        <div class="paddle-info">
+          <div class="paddle-name">${p.name}</div>
+          <div class="paddle-brand">${p.brand}</div>
+        </div>
+        <div class="paddle-price">${p.price}</div>
+      </div>
+      <div class="paddle-tags">
+        ${p.tagLabels.map((t,i) => `<span class="tag ${p.tagColors[i]}">${t}</span>`).join('')}
+        <span class="tag tag-blue">${p.level}</span>
+      </div>
+      <div class="paddle-stats">
+        <div class="pstat"><div class="pstat-val">${p.weight}</div><div class="pstat-lbl">Weight</div></div>
+        <div class="pstat"><div class="pstat-val">${p.thickness}</div><div class="pstat-lbl">Thickness</div></div>
+        <div class="pstat"><div class="pstat-val">${p.grip}</div><div class="pstat-lbl">Grip</div></div>
+      </div>
+      <div class="paddle-bars">
+        ${['power','control','spin','touch','reach'].map(attr => `
+          <div class="bar-row">
+            <div class="bar-label">${attr.charAt(0).toUpperCase()+attr.slice(1)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${p[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
+            <div class="bar-val">${p[attr]}</div>
+          </div>`).join('')}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function togglePaddle(id) {
+  if (selectedPaddles.includes(id)) {
+    selectedPaddles = selectedPaddles.filter(x => x !== id);
+  } else if (selectedPaddles.length < 2) {
+    selectedPaddles.push(id);
+  } else {
+    selectedPaddles.shift();
+    selectedPaddles.push(id);
+  }
+  renderPaddles();
+  updateCompareDrawer();
+}
+
+function updateCompareDrawer() {
+  const drawer = document.getElementById('compareDrawer');
+  const btn    = document.getElementById('compareNowBtn');
+  if (selectedPaddles.length > 0) {
+    drawer.classList.add('open');
+  } else {
+    drawer.classList.remove('open');
+  }
+  [0,1].forEach(i => {
+    const slot = document.getElementById('slot'+i);
+    const pid  = selectedPaddles[i];
+    if (pid) {
+      const p = PADDLES.find(x => x.id === pid);
+      slot.classList.add('filled');
+      slot.innerHTML = `<span style="font-size:20px">${p.emoji}</span><div class="cslot-name">${p.name.split(' ').slice(0,2).join(' ')}</div><div class="cslot-price">${p.price}</div><div class="cslot-rm" onclick="removePaddle(event,${pid})">✕</div>`;
+    } else {
+      slot.classList.remove('filled');
+      slot.innerHTML = `<span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div>`;
+    }
+  });
+  btn.disabled = selectedPaddles.length < 2;
+}
+
+function removePaddle(e, id) {
+  e.stopPropagation();
+  selectedPaddles = selectedPaddles.filter(x => x !== id);
+  renderPaddles();
+  updateCompareDrawer();
+}
+
+function openCompareModal() {
+  if (selectedPaddles.length < 2) return;
+  const [a, b] = selectedPaddles.map(id => PADDLES.find(p => p.id === id));
+  const table = document.getElementById('compareTable');
+  const attrs = [
+    {label:'Price',   va: a.price,     vb: b.price},
+    {label:'Material',va: a.material,  vb: b.material},
+    {label:'Type',    va: a.type,      vb: b.type},
+    {label:'Size',    va: a.size,      vb: b.size},
+    {label:'Weight',  va: a.weight,    vb: b.weight},
+    {label:'Thickness',va:a.thickness, vb: b.thickness},
+    {label:'Grip',    va: a.grip,      vb: b.grip},
+    {label:'Core',    va: a.core,      vb: b.core},
+    {label:'Level',   va: a.level,     vb: b.level},
+  ];
+  const bars = ['power','control','spin','touch','reach'];
+
+  table.innerHTML = `
+    <div class="ct-header">
+      <div></div>
+      <div class="ct-head">${a.emoji} ${a.name.split(' ').slice(0,2).join(' ')}</div>
+      <div class="ct-head">${b.emoji} ${b.name.split(' ').slice(0,2).join(' ')}</div>
+    </div>
+    ${attrs.map(r => `
+      <div class="ct-row">
+        <div class="ct-attr">${r.label}</div>
+        <div class="ct-val">${r.va}</div>
+        <div class="ct-val">${r.vb}</div>
+      </div>`).join('')}
+    <div style="height:12px"></div>
+    ${bars.map(attr => `
+      <div class="ct-row">
+        <div class="ct-attr">${attr.charAt(0).toUpperCase()+attr.slice(1)}</div>
+        <div class="ct-bar-wrap ${a[attr] > b[attr] ? 'best' : a[attr] < b[attr] ? 'worst' : ''}">
+          <div style="font-size:13px;font-weight:700">${a[attr]}</div>
+          <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${a[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
+        </div>
+        <div class="ct-bar-wrap ${b[attr] > a[attr] ? 'best' : b[attr] < a[attr] ? 'worst' : ''}">
+          <div style="font-size:13px;font-weight:700">${b[attr]}</div>
+          <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${b[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
+        </div>
+      </div>`).join('')}
+    <div style="height:16px"></div>`;
+
+  document.getElementById('compareModal').classList.add('open');
+}
+
+function closeCompareModal() {
+  document.getElementById('compareModal').classList.remove('open');
+}
+
+// Filter pills
+document.getElementById('filterPills').addEventListener('click', e => {
+  const pill = e.target.closest('.pill');
+  if (!pill) return;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  activeFilter = pill.dataset.filter;
+  renderPaddles();
+});
+
+/* ═══════════════════════════════════════════════
+   MAP
+═══════════════════════════════════════════════ */
+let map, markerLayer;
+
+const UTIL_COLORS = { low: '#34C759', medium: '#FF9500', high: '#FF3B30' };
+
+function makeIcon(util) {
+  const c = UTIL_COLORS[util];
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:32px;height:32px;background:${c};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:14px;">🏓</div>`,
+    iconSize:   [32,32],
+    iconAnchor: [16,16],
+    popupAnchor:[0,-20]
+  });
+}
+
+function initMap() {
+  map = L.map('map', { zoomControl: false, attributionControl: false }).setView([32.78, -117.17], 12);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '©OpenStreetMap ©CARTO', maxZoom: 19
+  }).addTo(map);
+
+  L.control.attribution({ prefix: false, position: 'bottomright' }).addTo(map);
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+  markerLayer = L.layerGroup().addTo(map);
+  COURTS.forEach(court => addCourtMarker(court));
+}
+
+function addCourtMarker(court) {
+  const m = L.marker([court.lat, court.lng], { icon: makeIcon(court.util) })
+    .addTo(markerLayer)
+    .bindPopup(`<b>${court.name}</b><br><small style="color:#636366">${court.util.toUpperCase()} utilization · ${court.courts} courts</small>`);
+  m.on('click', () => openCourt(court));
+}
+
+function openCourt(court) {
+  document.getElementById('pName').textContent    = court.name;
+  document.getElementById('pAddr').textContent    = court.addr;
+  document.getElementById('pRating').textContent  = court.rating;
+  document.getElementById('pReviews').textContent = `(${court.reviews} reviews)`;
+  document.getElementById('pCourts').textContent  = `${court.avail} of ${court.courts}`;
+  document.getElementById('pSurface').textContent = court.surface;
+  document.getElementById('pLighting').textContent= court.lighting ? 'Yes ✓' : 'No ✗';
+
+  // Stars
+  const full = Math.round(court.rating);
+  document.getElementById('pStars').textContent = '★'.repeat(full) + '☆'.repeat(5-full);
+
+  // Gauge
+  const pct = court.utilPct;
+  document.getElementById('gaugeThumb').style.left = pct + '%';
+  const badge = document.getElementById('utilBadge');
+  const valEl = document.getElementById('utilVal');
+  valEl.textContent = court.util.charAt(0).toUpperCase() + court.util.slice(1);
+  badge.className = 'util-badge badge-' + court.util;
+
+  // Wait time
+  const wait = court.util === 'low' ? 'No wait' : court.util === 'medium' ? '~10 min' : '~25 min';
+  document.getElementById('pWait').textContent = wait;
+
+  // Weekly heatmap
+  buildHeatmap(court);
+  document.getElementById('courtPanel').classList.add('open');
+}
+
+function closeCourt() {
+  document.getElementById('courtPanel').classList.remove('open');
+}
+
+function buildHeatmap(court) {
+  const days = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  const grid = document.getElementById('utilGrid');
+  grid.innerHTML = '';
+  days.forEach((d, di) => {
+    const col = document.createElement('div');
+    col.className = 'util-day';
+    col.innerHTML = `<div class="util-day-lbl">${d}</div><div class="util-hours" id="hours-${di}"></div>`;
+    grid.appendChild(col);
+    const hoursEl = col.querySelector('.util-hours');
+    // 12 hour blocks (6am–6pm)
+    for (let h = 0; h < 12; h++) {
+      const slot = document.createElement('div');
+      slot.className = 'util-slot';
+      const base = court.utilPct;
+      const variance = Math.random() * 40 - 20;
+      const morning = (h < 2 || h > 9) ? -25 : 0;
+      const weekend = (di >= 5) ? 20 : 0;
+      const raw = base + variance + morning + weekend;
+      const v = Math.max(5, Math.min(99, raw));
+      const cls = v < 35 ? 'util-low' : v < 65 ? 'util-med' : 'util-high';
+      slot.classList.add(cls);
+      hoursEl.appendChild(slot);
+    }
+  });
+}
+
+function searchLocation() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  // Simple geocode via Nominatim
+  fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.length) {
+        const { lat, lon } = data[0];
+        map.flyTo([parseFloat(lat), parseFloat(lon)], 13, { duration: 1.2 });
+      } else {
+        alert('Location not found. Try another search.');
+      }
+    })
+    .catch(() => alert('Search failed. Check your connection.'));
+}
+
+// Enter key search
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') searchLocation();
+});
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+renderPaddles();
+</script>
+</body>
+</html>
