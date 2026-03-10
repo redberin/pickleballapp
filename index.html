@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,6 +7,7 @@
   <title>PicklePro</title>
 
   <!-- PWA -->
+
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PicklePro" />
@@ -42,7 +44,7 @@
     #screen-bookings { padding-top:6px; }
 
     .tab-bar { height:var(--tab-h); background:rgba(255,255,255,.9); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--sep); display:flex; align-items:flex-start; justify-content:space-around; padding-top:10px; flex-shrink:0; z-index:100; }
-    .tab-btn { display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:4px 6px; color:var(--label4); transition:color .2s; flex:1; }
+    .tab-btn { display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:4px 6px; color:var(--label4); transition:color .2s; flex:1; -webkit-tap-highlight-color:transparent; }
     .tab-btn.active { color:var(--blue); }
     .tab-btn svg { width:24px; height:24px; }
     .tab-btn span { font-size:10px; font-weight:600; }
@@ -57,11 +59,12 @@
     .hero-banner::after { content:"🏓"; font-size:80px; position:absolute; right:-10px; bottom:-14px; opacity:.35; line-height:1; }
     .hero-banner h2 { font-size:22px; font-weight:800; letter-spacing:-.4px; }
     .hero-banner p  { font-size:13px; opacity:.85; margin-top:4px; line-height:1.5; }
-    .hero-btn { margin-top:14px; background:rgba(255,255,255,.22); color:#fff; border:1.5px solid rgba(255,255,255,.55); border-radius:30px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; display:inline-block; transition:background .2s; }
+    .hero-btn { margin-top:14px; background:rgba(255,255,255,.22); color:#fff; border:1.5px solid rgba(255,255,255,.55); border-radius:30px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; display:inline-block; transition:background .2s; -webkit-tap-highlight-color:transparent; }
+    .hero-btn:active { background:rgba(255,255,255,.35); }
 
     .quick-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:0 16px 16px; }
-    .qa-card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px; cursor:pointer; transition:transform .15s,box-shadow .15s; }
-    .qa-card:active { transform:scale(.97); box-shadow:none; }
+    .qa-card { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px; cursor:pointer; transition:transform .15s,box-shadow .15s; -webkit-tap-highlight-color:transparent; }
+    .qa-card:active { transform:scale(.96); box-shadow:none; }
     .qa-icon  { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; }
     .qa-title { font-size:14px; font-weight:700; }
     .qa-desc  { font-size:12px; color:var(--label4); line-height:1.4; }
@@ -79,10 +82,10 @@
     .upcoming-strip { margin:0 16px 16px; display:flex; flex-direction:column; gap:8px; }
     .upcoming-item { background:var(--card); border-radius:var(--radius-sm); padding:13px 14px; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; }
     .upcoming-dot  { width:40px; height:40px; border-radius:10px; background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-    .upcoming-info { flex:1; }
-    .upcoming-name { font-size:14px; font-weight:700; }
+    .upcoming-info { flex:1; min-width:0; }
+    .upcoming-name { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .upcoming-time { font-size:12px; color:var(--label4); margin-top:2px; }
-    .upcoming-badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+    .upcoming-badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; flex-shrink:0; }
     .badge-confirmed { background:#E8F8EC; color:var(--green); }
     .badge-pending   { background:#FFF4E5; color:var(--orange); }
 
@@ -90,19 +93,19 @@
     #screen-compare { padding-top:6px; }
     .filter-scroll { overflow-x:auto; white-space:nowrap; padding:6px 16px 12px; }
     .filter-scroll::-webkit-scrollbar { display:none; }
-    .pill { display:inline-flex; align-items:center; gap:5px; background:var(--card); border:1.5px solid var(--sep); border-radius:30px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--label3); cursor:pointer; margin-right:8px; transition:all .2s; }
+    .pill { display:inline-flex; align-items:center; gap:5px; background:var(--card); border:1.5px solid var(--sep); border-radius:30px; padding:7px 14px; font-size:13px; font-weight:600; color:var(--label3); cursor:pointer; margin-right:8px; transition:all .2s; -webkit-tap-highlight-color:transparent; }
     .pill.active { background:var(--blue); border-color:var(--blue); color:#fff; }
 
-    .paddles-grid { display:flex; flex-direction:column; gap:10px; padding:0 16px 10px; }
-    .paddle-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .paddles-grid { display:flex; flex-direction:column; gap:10px; padding:0 16px 120px; }
+    .paddle-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; cursor:pointer; transition:transform .15s,box-shadow .15s; -webkit-tap-highlight-color:transparent; }
     .paddle-card:active { transform:scale(.98); }
     .paddle-card.selected { border:2px solid var(--blue); box-shadow:0 4px 20px rgba(0,122,255,.2); }
     .paddle-top  { padding:14px 16px 12px; display:flex; align-items:center; gap:14px; }
     .paddle-emoji{ font-size:36px; width:60px; height:60px; background:var(--bg); border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-    .paddle-info { flex:1; }
+    .paddle-info { flex:1; min-width:0; }
     .paddle-name { font-size:16px; font-weight:700; }
     .paddle-brand{ font-size:13px; color:var(--label4); margin-top:1px; }
-    .paddle-price{ font-size:18px; font-weight:800; color:var(--blue); }
+    .paddle-price{ font-size:18px; font-weight:800; color:var(--blue); flex-shrink:0; }
     .paddle-tags { display:flex; flex-wrap:wrap; gap:6px; padding:0 16px 10px; }
     .tag { font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; }
     .tag-blue   { background:var(--blue-light); color:var(--blue); }
@@ -121,17 +124,82 @@
     .bar-fill   { height:100%; border-radius:99px; transition:width .6s ease; }
     .bar-val    { font-size:12px; font-weight:700; color:var(--label3); width:28px; text-align:right; }
 
-    .compare-drawer { position:fixed; bottom:var(--tab-h); left:50%; transform:translateX(-50%) translateY(100%); width:100%; max-width:430px; background:rgba(255,255,255,.95); backdrop-filter:blur(20px); border-top:1px solid var(--sep); border-radius:20px 20px 0 0; padding:16px; z-index:200; transition:transform .35s cubic-bezier(.4,0,.2,1); box-shadow:0 -4px 30px rgba(0,0,0,.12); }
+    /* Compare Drawer — fixed at bottom, above tab bar */
+    .compare-drawer {
+      position:fixed; bottom:var(--tab-h); left:50%; transform:translateX(-50%) translateY(calc(100% + 1px));
+      width:100%; max-width:430px; background:rgba(255,255,255,.97);
+      backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border-top:1px solid var(--sep); border-radius:20px 20px 0 0;
+      padding:14px 16px 16px; z-index:200;
+      transition:transform .35s cubic-bezier(.4,0,.2,1);
+      box-shadow:0 -4px 30px rgba(0,0,0,.12);
+    }
     .compare-drawer.open { transform:translateX(-50%) translateY(0); }
-    .compare-drawer-title { text-align:center; font-size:12px; font-weight:700; color:var(--label4); letter-spacing:.5px; margin-bottom:12px; }
+    .compare-drawer-title { text-align:center; font-size:11px; font-weight:700; color:var(--label4); letter-spacing:.5px; margin-bottom:10px; }
     .compare-slots { display:flex; gap:8px; margin-bottom:12px; }
-    .cslot { flex:1; background:var(--bg); border-radius:12px; padding:10px; text-align:center; min-height:60px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:2px dashed var(--sep); position:relative; }
+    .cslot { flex:1; background:var(--bg); border-radius:12px; padding:10px; text-align:center; min-height:58px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:2px dashed var(--sep); position:relative; }
     .cslot.filled { border:2px solid var(--blue); background:var(--blue-light); }
-    .cslot-name  { font-size:12px; font-weight:600; }
-    .cslot-price { font-size:11px; color:var(--blue); }
-    .cslot-rm    { position:absolute; top:4px; right:6px; font-size:15px; color:var(--red); cursor:pointer; }
-    .compare-now-btn { width:100%; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); padding:14px; font-size:15px; font-weight:700; cursor:pointer; }
+    .cslot-name  { font-size:11px; font-weight:600; line-height:1.3; margin-top:2px; }
+    .cslot-price { font-size:11px; color:var(--blue); font-weight:700; }
+    .cslot-rm    { position:absolute; top:4px; right:6px; font-size:14px; color:var(--red); cursor:pointer; line-height:1; padding:2px; }
+    .compare-now-btn { width:100%; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); padding:13px; font-size:15px; font-weight:700; cursor:pointer; transition:opacity .2s; -webkit-tap-highlight-color:transparent; }
     .compare-now-btn:disabled { background:var(--sep); color:var(--label4); cursor:not-allowed; }
+    .compare-now-btn:not(:disabled):active { opacity:.8; }
+
+    /* ── Compare Full-Screen Modal ── */
+    .compare-modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.55);
+      z-index:700; align-items:flex-end;
+      max-width:430px; margin:0 auto; left:50%; transform:translateX(-50%);
+    }
+    .compare-modal-overlay.open { display:flex; }
+    .compare-modal-sheet {
+      width:100%; background:var(--card); border-radius:24px 24px 0 0;
+      max-height:92vh; overflow-y:auto; padding-bottom:34px;
+      animation:slideUp .35s cubic-bezier(.4,0,.2,1); position:relative;
+      -webkit-overflow-scrolling:touch;
+    }
+    .compare-modal-sheet::-webkit-scrollbar { display:none; }
+    .cmp-sticky-header {
+      position:sticky; top:0; z-index:2;
+      background:rgba(255,255,255,.95); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--sep);
+      padding:12px 16px 12px;
+    }
+    .cmp-handle { width:36px; height:4px; background:var(--sep); border-radius:99px; margin:0 auto 12px; }
+    .cmp-title-row { display:flex; align-items:center; justify-content:space-between; }
+    .cmp-title { font-size:17px; font-weight:800; }
+    .cmp-close { width:28px; height:28px; background:var(--bg); border-radius:50%; border:none; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; color:var(--label3); -webkit-tap-highlight-color:transparent; }
+    .cmp-heads { display:grid; grid-template-columns:90px 1fr 1fr; gap:6px; margin-top:10px; }
+    .cmp-head-cell { text-align:center; }
+    .cmp-head-emoji { font-size:28px; display:block; }
+    .cmp-head-name { font-size:12px; font-weight:700; color:var(--label); line-height:1.3; margin-top:3px; }
+    .cmp-head-price { font-size:13px; font-weight:800; color:var(--blue); margin-top:1px; }
+
+    .cmp-body { padding:12px 16px 0; }
+    .cmp-section-title { font-size:11px; font-weight:700; color:var(--label4); letter-spacing:.6px; padding:10px 0 8px; border-bottom:1px solid var(--sep); margin-bottom:8px; }
+    .cmp-row { display:grid; grid-template-columns:90px 1fr 1fr; gap:6px; margin-bottom:6px; align-items:center; }
+    .cmp-attr { font-size:12px; color:var(--label3); font-weight:500; line-height:1.3; }
+    .cmp-val { text-align:center; font-size:13px; font-weight:700; background:var(--bg); border-radius:8px; padding:8px 4px; }
+    .cmp-val.best  { background:#E8F8EC; color:var(--green); }
+    .cmp-val.worst { background:#FFF4E5; color:var(--orange); }
+
+    .cmp-bar-cell { text-align:center; background:var(--bg); border-radius:8px; padding:8px 10px; }
+    .cmp-bar-cell.best  { background:#E8F8EC; }
+    .cmp-bar-cell.worst { background:#FFF4E5; }
+    .cmp-bar-num { font-size:13px; font-weight:800; }
+    .cmp-bar-cell.best .cmp-bar-num  { color:var(--green); }
+    .cmp-bar-cell.worst .cmp-bar-num { color:var(--orange); }
+    .cmp-bar-track { background:rgba(0,0,0,.08); border-radius:99px; height:5px; overflow:hidden; margin-top:5px; }
+    .cmp-bar-fill  { height:100%; border-radius:99px; }
+
+    .cmp-winner-banner {
+      margin:16px 0 0; background:linear-gradient(135deg,var(--blue),var(--teal));
+      border-radius:var(--radius-sm); padding:14px 16px; color:#fff; text-align:center;
+    }
+    .cmp-winner-label { font-size:10px; font-weight:700; letter-spacing:.8px; opacity:.8; }
+    .cmp-winner-name  { font-size:16px; font-weight:800; margin-top:4px; }
+    .cmp-winner-sub   { font-size:12px; opacity:.8; margin-top:2px; }
 
     /* ═══════════════════════════ MAP ═══════════════════════════ */
     .map-search-bar { padding:10px 16px; flex-shrink:0; }
@@ -139,18 +207,44 @@
     .search-icon  { padding:0 12px; font-size:16px; color:var(--label4); }
     .search-input { flex:1; border:none; outline:none; padding:12px 0; font-size:15px; font-family:inherit; background:transparent; color:var(--label); }
     .search-input::placeholder { color:var(--label4); }
-    .search-btn   { background:var(--blue); color:#fff; border:none; padding:0 16px; height:46px; font-size:13px; font-weight:600; cursor:pointer; }
+    .search-btn   { background:var(--blue); color:#fff; border:none; padding:0 16px; height:46px; font-size:13px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     #map { flex:1; min-height:0; z-index:1; }
     .map-legend { padding:8px 16px; background:var(--card); border-top:1px solid var(--sep); display:flex; align-items:center; gap:14px; flex-shrink:0; flex-wrap:wrap; }
     .legend-title { font-size:11px; font-weight:700; color:var(--label4); letter-spacing:.5px; }
     .legend-item  { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; }
     .legend-dot   { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
+    /* Map no-selection overlay */
+    .map-no-selection {
+      position:absolute; bottom:0; left:0; right:0; z-index:300;
+      padding:12px 16px 16px;
+      pointer-events:none;
+    }
+    .map-overview-card {
+      background:rgba(255,255,255,.97); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+      border-radius:var(--radius); box-shadow:var(--shadow-md);
+      padding:16px; pointer-events:all;
+      transform:translateY(0); transition:transform .3s ease, opacity .3s ease;
+    }
+    .map-overview-card.hidden { transform:translateY(120%); opacity:0; pointer-events:none; }
+    .map-ov-title { font-size:13px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:12px; }
+    .map-ov-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+    .map-ov-stat  { text-align:center; background:var(--bg); border-radius:var(--radius-sm); padding:10px 6px; }
+    .map-ov-val   { font-size:20px; font-weight:800; color:var(--blue); }
+    .map-ov-lbl   { font-size:10px; color:var(--label4); font-weight:500; margin-top:2px; }
+    .map-ov-util-row { display:flex; gap:6px; }
+    .map-ov-util-item { flex:1; display:flex; align-items:center; gap:6px; background:var(--bg); border-radius:var(--radius-sm); padding:8px 10px; }
+    .map-ov-util-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .map-ov-util-info { flex:1; }
+    .map-ov-util-label { font-size:10px; font-weight:600; color:var(--label4); }
+    .map-ov-util-count { font-size:14px; font-weight:800; }
+    .map-ov-hint { text-align:center; font-size:12px; color:var(--label4); margin-top:10px; }
+
     /* Court Panel */
-    .court-panel { position:absolute; bottom:0; left:0; right:0; background:rgba(255,255,255,.97); backdrop-filter:blur(20px); border-radius:24px 24px 0 0; box-shadow:0 -4px 30px rgba(0,0,0,.15); transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); z-index:400; padding-bottom:20px; max-height:75%; overflow-y:auto; }
+    .court-panel { position:absolute; bottom:0; left:0; right:0; background:rgba(255,255,255,.97); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-radius:24px 24px 0 0; box-shadow:0 -4px 30px rgba(0,0,0,.15); transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); z-index:400; padding-bottom:20px; max-height:75%; overflow-y:auto; -webkit-overflow-scrolling:touch; }
     .court-panel.open { transform:translateY(0); }
     .panel-handle { width:36px; height:4px; background:var(--sep); border-radius:99px; margin:12px auto 10px; }
-    .panel-close  { position:absolute; top:14px; right:16px; width:28px; height:28px; background:var(--bg); border:none; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; color:var(--label3); z-index:2; }
+    .panel-close  { position:absolute; top:14px; right:16px; width:28px; height:28px; background:var(--bg); border:none; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; color:var(--label3); z-index:2; -webkit-tap-highlight-color:transparent; }
     .panel-header { padding:0 16px 12px; }
     .panel-name   { font-size:19px; font-weight:800; }
     .panel-addr   { font-size:13px; color:var(--label4); margin-top:2px; }
@@ -191,7 +285,7 @@
     .pinfo-val  { font-size:15px; font-weight:700; margin-top:2px; }
 
     .panel-actions { display:flex; gap:10px; padding:0 16px; }
-    .action-btn     { flex:1; padding:13px; border-radius:var(--radius-sm); border:none; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity .2s; }
+    .action-btn     { flex:1; padding:13px; border-radius:var(--radius-sm); border:none; font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity .2s; -webkit-tap-highlight-color:transparent; }
     .action-btn:active { opacity:.75; }
     .btn-primary    { background:var(--blue); color:#fff; }
     .btn-secondary  { background:var(--bg); color:var(--blue); border:1.5px solid var(--blue); }
@@ -199,10 +293,11 @@
     /* ═══════════════════════════ BOOKING MODAL ═══════════════════════════ */
     .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:600; align-items:flex-end; max-width:430px; margin:0 auto; left:50%; transform:translateX(-50%); }
     .modal-overlay.open { display:flex; }
-    .modal-sheet { width:100%; background:var(--card); border-radius:24px 24px 0 0; max-height:92vh; overflow-y:auto; padding-bottom:34px; animation:slideUp .35s cubic-bezier(.4,0,.2,1); position:relative; }
+    .modal-sheet { width:100%; background:var(--card); border-radius:24px 24px 0 0; max-height:92vh; overflow-y:auto; padding-bottom:34px; animation:slideUp .35s cubic-bezier(.4,0,.2,1); position:relative; -webkit-overflow-scrolling:touch; }
+    .modal-sheet::-webkit-scrollbar { display:none; }
     @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
     .modal-handle { width:36px; height:4px; background:var(--sep); border-radius:99px; margin:12px auto 0; }
-    .modal-close  { position:absolute; top:16px; right:16px; width:30px; height:30px; background:var(--bg); border-radius:50%; border:none; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--label3); z-index:2; }
+    .modal-close  { position:absolute; top:16px; right:16px; width:30px; height:30px; background:var(--bg); border-radius:50%; border:none; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; color:var(--label3); z-index:2; -webkit-tap-highlight-color:transparent; }
 
     /* Booking Steps */
     .booking-header { padding:20px 20px 0; }
@@ -228,10 +323,10 @@
     /* Calendar */
     .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
     .cal-month { font-size:16px; font-weight:700; }
-    .cal-arrow { background:var(--bg); border:none; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--label3); }
+    .cal-arrow { background:var(--bg); border:none; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--label3); -webkit-tap-highlight-color:transparent; }
     .cal-grid  { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
     .cal-dow   { text-align:center; font-size:11px; font-weight:600; color:var(--label4); padding:4px 0; }
-    .cal-day   { text-align:center; padding:8px 4px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; transition:all .2s; min-height:36px; display:flex; align-items:center; justify-content:center; }
+    .cal-day   { text-align:center; padding:8px 4px; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; transition:all .2s; min-height:36px; display:flex; align-items:center; justify-content:center; flex-direction:column; -webkit-tap-highlight-color:transparent; }
     .cal-day:hover    { background:var(--blue-light); }
     .cal-day.today    { font-weight:800; color:var(--blue); }
     .cal-day.selected { background:var(--blue); color:#fff; font-weight:700; }
@@ -244,14 +339,14 @@
     .option-group { margin-bottom:20px; }
     .option-label { font-size:13px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:10px; }
     .option-pills { display:flex; gap:8px; flex-wrap:wrap; }
-    .option-pill  { padding:10px 18px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; color:var(--label); }
+    .option-pill  { padding:10px 18px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; color:var(--label); -webkit-tap-highlight-color:transparent; }
     .option-pill.selected { background:var(--blue); border-color:var(--blue); color:#fff; }
 
     /* Time Slots */
     .slots-section { margin-bottom:20px; }
     .slots-label   { font-size:13px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:10px; }
     .slots-grid    { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-    .time-slot     { padding:11px 6px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); text-align:center; cursor:pointer; transition:all .2s; }
+    .time-slot     { padding:11px 6px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); text-align:center; cursor:pointer; transition:all .2s; -webkit-tap-highlight-color:transparent; }
     .time-slot .ts-time  { font-size:14px; font-weight:700; color:var(--label); }
     .time-slot .ts-avail { font-size:10px; color:var(--label4); margin-top:2px; }
     .time-slot.selected  { background:var(--blue); border-color:var(--blue); }
@@ -262,7 +357,7 @@
     .time-slot.limited .ts-avail { color:var(--orange); }
 
     /* Court Picker Step */
-    .court-option { background:var(--bg); border-radius:var(--radius-sm); padding:13px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; cursor:pointer; border:1.5px solid var(--sep); transition:all .2s; }
+    .court-option { background:var(--bg); border-radius:var(--radius-sm); padding:13px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; cursor:pointer; border:1.5px solid var(--sep); transition:all .2s; -webkit-tap-highlight-color:transparent; }
     .court-option:active { opacity:.7; }
     .court-option.selected { background:var(--blue-light); border-color:var(--blue); }
     .court-num  { width:36px; height:36px; border-radius:10px; background:var(--card); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:var(--blue); flex-shrink:0; box-shadow:var(--shadow); }
@@ -292,12 +387,12 @@
     .coupon-row { display:flex; gap:8px; margin-bottom:16px; }
     .coupon-input { flex:1; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--sep); font-size:14px; font-family:inherit; outline:none; background:var(--card); color:var(--label); }
     .coupon-input:focus { border-color:var(--blue); }
-    .coupon-btn { background:var(--bg); border:1.5px solid var(--sep); border-radius:var(--radius-sm); padding:12px 16px; font-size:13px; font-weight:700; cursor:pointer; color:var(--blue); white-space:nowrap; }
+    .coupon-btn { background:var(--bg); border:1.5px solid var(--sep); border-radius:var(--radius-sm); padding:12px 16px; font-size:13px; font-weight:700; cursor:pointer; color:var(--blue); white-space:nowrap; -webkit-tap-highlight-color:transparent; }
 
     /* Nav buttons */
     .booking-nav { display:flex; gap:10px; padding:16px 20px 0; }
-    .nav-back     { flex:1; padding:14px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); font-size:15px; font-weight:700; cursor:pointer; color:var(--label3); }
-    .nav-next     { flex:2; padding:14px; border-radius:var(--radius-sm); background:var(--blue); border:none; font-size:15px; font-weight:700; cursor:pointer; color:#fff; transition:opacity .2s; }
+    .nav-back     { flex:1; padding:14px; border-radius:var(--radius-sm); background:var(--bg); border:1.5px solid var(--sep); font-size:15px; font-weight:700; cursor:pointer; color:var(--label3); -webkit-tap-highlight-color:transparent; }
+    .nav-next     { flex:2; padding:14px; border-radius:var(--radius-sm); background:var(--blue); border:none; font-size:15px; font-weight:700; cursor:pointer; color:#fff; transition:opacity .2s; -webkit-tap-highlight-color:transparent; }
     .nav-next:disabled { background:var(--sep); color:var(--label4); cursor:not-allowed; }
     .nav-next.confirm  { background:var(--green); }
 
@@ -317,13 +412,13 @@
     .sdet-lbl { color:var(--label4); }
     .sdet-val { font-weight:700; }
     .success-btns { display:flex; gap:10px; }
-    .suc-btn { flex:1; padding:13px; border-radius:var(--radius-sm); font-size:14px; font-weight:700; cursor:pointer; border:none; }
+    .suc-btn { flex:1; padding:13px; border-radius:var(--radius-sm); font-size:14px; font-weight:700; cursor:pointer; border:none; -webkit-tap-highlight-color:transparent; }
     .suc-primary   { background:var(--blue); color:#fff; }
     .suc-secondary { background:var(--bg); color:var(--blue); border:1.5px solid var(--blue) !important; }
 
     /* ═══════════════════════════ MY BOOKINGS ═══════════════════════════ */
     .bookings-tabs { display:flex; gap:0; margin:0 16px 14px; background:var(--bg); border-radius:var(--radius-sm); padding:3px; }
-    .btab { flex:1; padding:8px; text-align:center; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; color:var(--label4); border:none; background:transparent; transition:all .2s; }
+    .btab { flex:1; padding:8px; text-align:center; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; color:var(--label4); border:none; background:transparent; transition:all .2s; -webkit-tap-highlight-color:transparent; }
     .btab.active { background:var(--card); color:var(--label); box-shadow:var(--shadow); }
 
     .booking-item { background:var(--card); border-radius:var(--radius); margin:0 16px 10px; box-shadow:var(--shadow); overflow:hidden; }
@@ -340,7 +435,7 @@
     .bid-lbl  { font-size:10px; font-weight:600; color:var(--label4); letter-spacing:.3px; }
     .bid-val  { font-size:14px; font-weight:700; margin-top:2px; }
     .booking-item-actions { display:flex; border-top:1px solid var(--sep); }
-    .bi-action { flex:1; padding:12px; text-align:center; font-size:13px; font-weight:700; cursor:pointer; border:none; background:transparent; color:var(--blue); border-right:1px solid var(--sep); }
+    .bi-action { flex:1; padding:12px; text-align:center; font-size:13px; font-weight:700; cursor:pointer; border:none; background:transparent; color:var(--blue); border-right:1px solid var(--sep); -webkit-tap-highlight-color:transparent; }
     .bi-action:last-child { border-right:none; }
     .bi-action.cancel { color:var(--red); }
 
@@ -355,10 +450,12 @@
     .avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:28px; color:#fff; font-weight:700; flex-shrink:0; box-shadow:0 4px 16px rgba(0,122,255,.3); }
     .profile-name  { font-size:20px; font-weight:800; }
     .profile-level { font-size:13px; color:var(--label4); margin-top:3px; }
-    .profile-edit  { margin-top:6px; background:var(--blue-light); color:var(--blue); border:none; border-radius:20px; padding:5px 14px; font-size:12px; font-weight:600; cursor:pointer; }
+    .profile-edit  { margin-top:6px; background:var(--blue-light); color:var(--blue); border:none; border-radius:20px; padding:5px 14px; font-size:12px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity .2s; }
+    .profile-edit:active { opacity:.7; }
     .settings-group { margin:0 16px 16px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
     .settings-group-title { padding:10px 16px 6px; font-size:12px; font-weight:700; color:var(--label4); letter-spacing:.5px; }
-    .setting-row  { display:flex; align-items:center; padding:13px 16px; border-bottom:1px solid var(--sep); gap:12px; cursor:pointer; }
+    .setting-row  { display:flex; align-items:center; padding:13px 16px; border-bottom:1px solid var(--sep); gap:12px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .15s; }
+    .setting-row:active { background:var(--bg); }
     .setting-row:last-child { border-bottom:none; }
     .setting-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
     .setting-text { flex:1; }
@@ -378,22 +475,64 @@
     .skill-bar-fill  { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--blue),var(--teal)); }
     .skill-score { font-size:13px; font-weight:700; color:var(--label3); width:28px; text-align:right; }
 
-    /* ═══════════════════════════ COMPARE MODAL ═══════════════════════════ */
-    .compare-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:700; align-items:flex-end; max-width:430px; margin:0 auto; left:50%; transform:translateX(-50%); }
-    .compare-modal-overlay.open { display:flex; }
-    .compare-modal-sheet { width:100%; background:var(--card); border-radius:24px 24px 0 0; max-height:90vh; overflow-y:auto; padding-bottom:30px; animation:slideUp .35s ease; position:relative; }
-    .ct-header { display:grid; grid-template-columns:100px 1fr 1fr; gap:6px; margin-bottom:12px; }
-    .ct-head   { text-align:center; font-size:13px; font-weight:700; background:var(--bg); border-radius:10px; padding:10px 6px; }
-    .ct-row    { display:grid; grid-template-columns:100px 1fr 1fr; gap:6px; margin-bottom:8px; align-items:center; }
-    .ct-attr   { font-size:13px; color:var(--label3); font-weight:500; }
-    .ct-val    { text-align:center; font-size:14px; font-weight:700; background:var(--bg); border-radius:10px; padding:10px 6px; }
-    .ct-val.best  { background:#E8F8EC; color:var(--green); }
-    .ct-val.worst { background:#FFF4E5; color:var(--orange); }
-    .ct-bar-wrap  { text-align:center; background:var(--bg); border-radius:10px; padding:8px 10px; }
-    .ct-bar-wrap.best  { background:#E8F8EC; }
-    .ct-bar-wrap.worst { background:#FFF4E5; }
-    .ct-bar-track { background:var(--sep); border-radius:99px; height:6px; overflow:hidden; margin-top:4px; }
-    .ct-bar-fill  { height:100%; border-radius:99px; }
+    /* ═══════════════════════════ EDIT PROFILE MODAL ═══════════════════════════ */
+    .edit-profile-overlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+      z-index:800; align-items:flex-end;
+      max-width:430px; margin:0 auto; left:50%; transform:translateX(-50%);
+    }
+    .edit-profile-overlay.open { display:flex; }
+    .edit-profile-sheet {
+      width:100%; background:var(--card); border-radius:24px 24px 0 0;
+      max-height:92vh; overflow-y:auto; padding-bottom:40px;
+      animation:slideUp .35s cubic-bezier(.4,0,.2,1);
+      -webkit-overflow-scrolling:touch;
+    }
+    .edit-profile-sheet::-webkit-scrollbar { display:none; }
+    .ep-header {
+      padding:16px 20px 12px;
+      border-bottom:1px solid var(--sep);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .ep-title { font-size:17px; font-weight:800; }
+    .ep-close { width:28px; height:28px; background:var(--bg); border-radius:50%; border:none; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; color:var(--label3); -webkit-tap-highlight-color:transparent; }
+    .ep-avatar-section { display:flex; flex-direction:column; align-items:center; padding:24px 20px 16px; }
+    .ep-avatar { width:84px; height:84px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; font-size:32px; color:#fff; font-weight:700; margin-bottom:10px; box-shadow:0 4px 20px rgba(0,122,255,.3); position:relative; cursor:pointer; }
+    .ep-avatar-badge { position:absolute; bottom:2px; right:2px; width:26px; height:26px; background:var(--blue); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; border:2px solid #fff; }
+    .ep-avatar-hint { font-size:12px; color:var(--label4); }
+    .ep-body { padding:0 20px; }
+    .ep-field { margin-bottom:16px; }
+    .ep-label { font-size:12px; font-weight:700; color:var(--label4); letter-spacing:.4px; margin-bottom:6px; }
+    .ep-input { width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--sep); font-size:15px; font-family:inherit; outline:none; background:var(--bg); color:var(--label); transition:border-color .2s; }
+    .ep-input:focus { border-color:var(--blue); background:#fff; }
+    .ep-select { width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--sep); font-size:15px; font-family:inherit; outline:none; background:var(--bg); color:var(--label); appearance:none; -webkit-appearance:none; transition:border-color .2s; }
+    .ep-select:focus { border-color:var(--blue); background:#fff; }
+    .ep-select-wrap { position:relative; }
+    .ep-select-arrow { position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--label4); font-size:13px; pointer-events:none; }
+    .ep-dupr-row { display:flex; align-items:center; gap:12px; }
+    .ep-dupr-input { flex:1; padding:12px 14px; border-radius:var(--radius-sm); border:1.5px solid var(--sep); font-size:15px; font-family:inherit; outline:none; background:var(--bg); color:var(--label); transition:border-color .2s; }
+    .ep-dupr-input:focus { border-color:var(--blue); background:#fff; }
+    .ep-dupr-badge { background:var(--blue-light); color:var(--blue); font-size:12px; font-weight:700; padding:6px 12px; border-radius:20px; white-space:nowrap; }
+    .ep-skills-section { margin-bottom:16px; }
+    .ep-skill-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .ep-skill-lbl  { font-size:13px; color:var(--label3); width:72px; flex-shrink:0; }
+    .ep-skill-slider { flex:1; -webkit-appearance:none; appearance:none; height:6px; border-radius:99px; background:var(--bg); outline:none; }
+    .ep-skill-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:var(--blue); cursor:pointer; box-shadow:0 2px 6px rgba(0,122,255,.4); }
+    .ep-skill-val  { font-size:13px; font-weight:700; color:var(--blue); width:28px; text-align:right; }
+    .ep-save-btn { width:100%; padding:15px; background:var(--blue); color:#fff; border:none; border-radius:var(--radius-sm); font-size:16px; font-weight:700; cursor:pointer; margin-top:4px; -webkit-tap-highlight-color:transparent; transition:opacity .2s; }
+    .ep-save-btn:active { opacity:.85; }
+    .ep-divider { height:1px; background:var(--sep); margin:16px 0; }
+
+    /* ═══════════════════════════ TOAST ═══════════════════════════ */
+    .toast {
+      position:fixed; top:calc(var(--header-h) + 10px);
+      left:50%; transform:translateX(-50%) translateY(-20px);
+      background:var(--label); color:#fff; padding:10px 20px;
+      border-radius:99px; font-size:13px; font-weight:600;
+      z-index:9999; opacity:0; transition:all .3s ease;
+      white-space:nowrap; pointer-events:none; max-width:320px;
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
     /* ═══════════════════════════ ANIMATIONS ═══════════════════════════ */
     @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
@@ -405,11 +544,13 @@
     .leaflet-popup-content { font-size:13px; margin:10px 14px !important; }
     .leaflet-popup-tip-container { display:none; }
   </style>
+
 </head>
 <body>
 <div id="app">
 
   <!-- HEADER -->
+
   <div class="app-header">
     <h1>PicklePro <span class="header-badge">BETA</span></h1>
   </div>
@@ -417,6 +558,7 @@
   <!-- ══════════════════════════════════════
        HOME SCREEN
   ══════════════════════════════════════ -->
+
   <div id="screen-home" class="screen active">
     <div class="hero-banner">
       <h2>Welcome Back! 👋</h2>
@@ -424,48 +566,52 @@
       <div class="hero-btn" onclick="switchTab('map')">Find Courts Near Me →</div>
     </div>
 
-    <div class="stat-row">
-      <div class="stat-card"><div class="stat-val">24</div><div class="stat-lbl">Courts Nearby</div></div>
-      <div class="stat-card"><div class="stat-val">3.8</div><div class="stat-lbl">Your DUPR</div></div>
-      <div class="stat-card"><div class="stat-val" id="homeBookingCount">2</div><div class="stat-lbl">Upcoming</div></div>
-    </div>
+```
+<div class="stat-row">
+  <div class="stat-card"><div class="stat-val">24</div><div class="stat-lbl">Courts Nearby</div></div>
+  <div class="stat-card"><div class="stat-val" id="homeDupr">3.8</div><div class="stat-lbl">Your DUPR</div></div>
+  <div class="stat-card"><div class="stat-val" id="homeBookingCount">2</div><div class="stat-lbl">Upcoming</div></div>
+</div>
 
-    <div class="section-header">Quick Actions</div>
-    <div class="quick-actions">
-      <div class="qa-card" onclick="switchTab('compare')">
-        <div class="qa-icon" style="background:#E8F2FF">🏓</div>
-        <div class="qa-title">Compare Paddles</div>
-        <div class="qa-desc">Side-by-side analysis</div>
-      </div>
-      <div class="qa-card" onclick="switchTab('map')">
-        <div class="qa-icon" style="background:#E8F8EC">📍</div>
-        <div class="qa-title">Find Courts</div>
-        <div class="qa-desc">Map & utilization data</div>
-      </div>
-      <div class="qa-card" onclick="switchTab('bookings')">
-        <div class="qa-icon" style="background:#FFF4E5">📅</div>
-        <div class="qa-title">My Bookings</div>
-        <div class="qa-desc">View & manage reservations</div>
-      </div>
-      <div class="qa-card" onclick="switchTab('profile')">
-        <div class="qa-icon" style="background:#F3E8FC">👤</div>
-        <div class="qa-title">My Profile</div>
-        <div class="qa-desc">Stats & preferences</div>
-      </div>
-    </div>
+<div class="section-header">Quick Actions</div>
+<div class="quick-actions">
+  <div class="qa-card" onclick="switchTab('compare')">
+    <div class="qa-icon" style="background:#E8F2FF">🏓</div>
+    <div class="qa-title">Compare Paddles</div>
+    <div class="qa-desc">Side-by-side analysis</div>
+  </div>
+  <div class="qa-card" onclick="switchTab('map')">
+    <div class="qa-icon" style="background:#E8F8EC">📍</div>
+    <div class="qa-title">Find Courts</div>
+    <div class="qa-desc">Map & utilization data</div>
+  </div>
+  <div class="qa-card" onclick="switchTab('bookings')">
+    <div class="qa-icon" style="background:#FFF4E5">📅</div>
+    <div class="qa-title">My Bookings</div>
+    <div class="qa-desc">View & manage reservations</div>
+  </div>
+  <div class="qa-card" onclick="switchTab('profile')">
+    <div class="qa-icon" style="background:#F3E8FC">👤</div>
+    <div class="qa-title">My Profile</div>
+    <div class="qa-desc">Stats & preferences</div>
+  </div>
+</div>
 
-    <div class="section-header">Upcoming Bookings</div>
-    <div class="upcoming-strip" id="homeUpcoming"></div>
+<div class="section-header">Upcoming Bookings</div>
+<div class="upcoming-strip" id="homeUpcoming"></div>
 
-    <div class="tip-card" style="margin:8px 16px 20px">
-      <div class="tip-tag">💡 PRO TIP OF THE DAY</div>
-      <p>"Use a soft dink shot low over the net to force your opponent into the kitchen — the foundation of winning strategy!"</p>
-    </div>
+<div class="tip-card" style="margin:8px 16px 20px">
+  <div class="tip-tag">💡 PRO TIP OF THE DAY</div>
+  <p>"Use a soft dink shot low over the net to force your opponent into the kitchen — the foundation of winning strategy!"</p>
+</div>
+```
+
   </div>
 
   <!-- ══════════════════════════════════════
        PADDLE COMPARE SCREEN
   ══════════════════════════════════════ -->
+
   <div id="screen-compare" class="screen">
     <div class="section-header">Paddle Comparison</div>
     <div class="section-sub">Tap paddles to select (up to 2) and compare</div>
@@ -480,27 +626,41 @@
       <div class="pill" data-filter="control">Control</div>
     </div>
     <div class="paddles-grid" id="paddleGrid"></div>
-    <div class="compare-drawer" id="compareDrawer">
-      <div class="compare-drawer-title">COMPARISON TRAY</div>
-      <div class="compare-slots">
-        <div class="cslot" id="slot0"><span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div></div>
-        <div class="cslot" id="slot1"><span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div></div>
+
+```
+<!-- Compare Drawer -->
+<div class="compare-drawer" id="compareDrawer">
+  <div class="compare-drawer-title">COMPARISON TRAY</div>
+  <div class="compare-slots">
+    <div class="cslot" id="slot0"><span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div></div>
+    <div class="cslot" id="slot1"><span style="font-size:22px;color:var(--sep)">＋</span><div class="cslot-name" style="color:var(--label4);font-size:11px;margin-top:4px">Pick paddle</div></div>
+  </div>
+  <button class="compare-now-btn" id="compareNowBtn" disabled onclick="openCompareModal()">Compare Now</button>
+</div>
+```
+
+  </div>
+
+  <!-- Compare Full-Screen Modal (separate from drawer) -->
+
+  <div class="compare-modal-overlay" id="compareModalOverlay">
+    <div class="compare-modal-sheet" id="compareModalSheet">
+      <div class="cmp-sticky-header">
+        <div class="cmp-handle"></div>
+        <div class="cmp-title-row">
+          <div class="cmp-title">Head-to-Head</div>
+          <button class="cmp-close" onclick="closeCompareModal()">✕</button>
+        </div>
+        <div class="cmp-heads" id="cmpHeads"></div>
       </div>
-      <button class="compare-now-btn" id="compareNowBtn" disabled onclick="openCompareModal()">Compare Now</button>
-    </div>
-    <div class="compare-modal-overlay" id="compareModalOverlay">
-      <div class="compare-modal-sheet">
-        <div class="modal-handle"></div>
-        <button class="modal-close" onclick="closeCompareModal()">✕</button>
-        <div style="font-size:18px;font-weight:800;text-align:center;margin-bottom:16px;padding-top:8px;">Head-to-Head</div>
-        <div style="padding:0 16px;" id="compareTable"></div>
-      </div>
+      <div class="cmp-body" id="compareTable"></div>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════
        MAP SCREEN
   ══════════════════════════════════════ -->
+
   <div id="screen-map" class="screen" style="position:relative;">
     <div class="map-search-bar">
       <div class="search-input-wrap">
@@ -517,56 +677,87 @@
       <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>High</div>
     </div>
 
-    <!-- Court Detail Panel -->
-    <div class="court-panel" id="courtPanel">
-      <div class="panel-handle"></div>
-      <button class="panel-close" onclick="closeCourt()">✕</button>
-      <div class="panel-header">
-        <div class="panel-name" id="pName"></div>
-        <div class="panel-addr" id="pAddr"></div>
-        <div class="panel-rating">
-          <div class="stars" id="pStars"></div>
-          <div class="rating-val" id="pRating"></div>
-          <div class="rating-cnt" id="pReviews"></div>
-        </div>
+```
+<!-- No-selection overview card -->
+<div class="map-no-selection" id="mapNoSelection">
+  <div class="map-overview-card" id="mapOverviewCard">
+    <div class="map-ov-title">📍 COURTS IN YOUR AREA</div>
+    <div class="map-ov-stats">
+      <div class="map-ov-stat"><div class="map-ov-val">7</div><div class="map-ov-lbl">Total Courts</div></div>
+      <div class="map-ov-stat"><div class="map-ov-val">35</div><div class="map-ov-lbl">Active Courts</div></div>
+      <div class="map-ov-stat"><div class="map-ov-val" style="color:var(--green)">31</div><div class="map-ov-lbl">Available Now</div></div>
+    </div>
+    <div class="map-ov-util-row">
+      <div class="map-ov-util-item">
+        <div class="map-ov-util-dot" style="background:var(--green)"></div>
+        <div class="map-ov-util-info"><div class="map-ov-util-label">Low Traffic</div><div class="map-ov-util-count" style="color:var(--green)">3 venues</div></div>
       </div>
-      <div class="util-meter-wrap">
-        <div class="util-meter-title">CURRENT UTILIZATION</div>
-        <div class="util-meter">
-          <div class="util-gauge">
-            <div class="gauge-bar"><div class="gauge-thumb" id="gaugeThumb" style="left:20%"></div></div>
-            <div class="gauge-labels">
-              <span style="color:var(--green)">Low</span>
-              <span style="color:var(--orange)">Med</span>
-              <span style="color:var(--red)">High</span>
-            </div>
-          </div>
-          <div class="util-badge" id="utilBadge">
-            <div class="ub-lbl">STATUS</div>
-            <div class="ub-val" id="utilVal"></div>
-          </div>
-        </div>
+      <div class="map-ov-util-item">
+        <div class="map-ov-util-dot" style="background:var(--orange)"></div>
+        <div class="map-ov-util-info"><div class="map-ov-util-label">Medium</div><div class="map-ov-util-count" style="color:var(--orange)">2 venues</div></div>
       </div>
-      <div class="util-section">
-        <div class="util-title">WEEKLY HEATMAP</div>
-        <div class="util-grid" id="utilGrid"></div>
-      </div>
-      <div class="panel-info-grid">
-        <div class="pinfo-card"><div class="pinfo-lbl">Courts Available</div><div class="pinfo-val" id="pCourts"></div></div>
-        <div class="pinfo-card"><div class="pinfo-lbl">Surface Type</div><div class="pinfo-val" id="pSurface"></div></div>
-        <div class="pinfo-card"><div class="pinfo-lbl">Lighting</div><div class="pinfo-val" id="pLighting"></div></div>
-        <div class="pinfo-card"><div class="pinfo-lbl">Est. Wait Time</div><div class="pinfo-val" id="pWait"></div></div>
-      </div>
-      <div class="panel-actions">
-        <button class="action-btn btn-secondary" onclick="openDirections()">🗺 Directions</button>
-        <button class="action-btn btn-primary" id="bookCourtBtn" onclick="openBookingFromCourt()">📅 Book Court</button>
+      <div class="map-ov-util-item">
+        <div class="map-ov-util-dot" style="background:var(--red)"></div>
+        <div class="map-ov-util-info"><div class="map-ov-util-label">Busy</div><div class="map-ov-util-count" style="color:var(--red)">2 venues</div></div>
       </div>
     </div>
+    <div class="map-ov-hint">👆 Tap a marker to see court details</div>
+  </div>
+</div>
+
+<!-- Court Detail Panel -->
+<div class="court-panel" id="courtPanel">
+  <div class="panel-handle"></div>
+  <button class="panel-close" onclick="closeCourt()">✕</button>
+  <div class="panel-header">
+    <div class="panel-name" id="pName"></div>
+    <div class="panel-addr" id="pAddr"></div>
+    <div class="panel-rating">
+      <div class="stars" id="pStars"></div>
+      <div class="rating-val" id="pRating"></div>
+      <div class="rating-cnt" id="pReviews"></div>
+    </div>
+  </div>
+  <div class="util-meter-wrap">
+    <div class="util-meter-title">CURRENT UTILIZATION</div>
+    <div class="util-meter">
+      <div class="util-gauge">
+        <div class="gauge-bar"><div class="gauge-thumb" id="gaugeThumb" style="left:20%"></div></div>
+        <div class="gauge-labels">
+          <span style="color:var(--green)">Low</span>
+          <span style="color:var(--orange)">Med</span>
+          <span style="color:var(--red)">High</span>
+        </div>
+      </div>
+      <div class="util-badge" id="utilBadge">
+        <div class="ub-lbl">STATUS</div>
+        <div class="ub-val" id="utilVal"></div>
+      </div>
+    </div>
+  </div>
+  <div class="util-section">
+    <div class="util-title">WEEKLY HEATMAP</div>
+    <div class="util-grid" id="utilGrid"></div>
+  </div>
+  <div class="panel-info-grid">
+    <div class="pinfo-card"><div class="pinfo-lbl">Courts Available</div><div class="pinfo-val" id="pCourts"></div></div>
+    <div class="pinfo-card"><div class="pinfo-lbl">Surface Type</div><div class="pinfo-val" id="pSurface"></div></div>
+    <div class="pinfo-card"><div class="pinfo-lbl">Lighting</div><div class="pinfo-val" id="pLighting"></div></div>
+    <div class="pinfo-card"><div class="pinfo-lbl">Est. Wait Time</div><div class="pinfo-val" id="pWait"></div></div>
+  </div>
+  <div class="panel-actions">
+    <button class="action-btn btn-secondary" onclick="openDirections()">🗺 Directions</button>
+    <button class="action-btn btn-primary" id="bookCourtBtn" onclick="openBookingFromCourt()">📅 Book Court</button>
+  </div>
+</div>
+```
+
   </div>
 
   <!-- ══════════════════════════════════════
        BOOKINGS SCREEN
   ══════════════════════════════════════ -->
+
   <div id="screen-bookings" class="screen">
     <div class="section-header">My Bookings</div>
     <div class="section-sub">Manage your court reservations</div>
@@ -585,26 +776,27 @@
   <!-- ══════════════════════════════════════
        PROFILE SCREEN
   ══════════════════════════════════════ -->
+
   <div id="screen-profile" class="screen">
     <div class="profile-header">
-      <div class="avatar">JP</div>
+      <div class="avatar" id="profileAvatar">JP</div>
       <div>
-        <div class="profile-name">Jamie Pickle</div>
-        <div class="profile-level">⭐ Intermediate · DUPR 3.8</div>
-        <button class="profile-edit">Edit Profile</button>
+        <div class="profile-name" id="profileName">Jamie Pickle</div>
+        <div class="profile-level" id="profileLevel">⭐ Intermediate · DUPR 3.8</div>
+        <button class="profile-edit" onclick="openEditProfile()">Edit Profile</button>
       </div>
     </div>
     <div class="skill-card">
       <div class="skill-title">🎯 Skill Breakdown</div>
-      <div class="skill-row"><div class="skill-lbl">Dinking</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:82%"></div></div><div class="skill-score">8.2</div></div>
-      <div class="skill-row"><div class="skill-lbl">Serving</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:74%"></div></div><div class="skill-score">7.4</div></div>
-      <div class="skill-row"><div class="skill-lbl">Volley</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:68%"></div></div><div class="skill-score">6.8</div></div>
-      <div class="skill-row"><div class="skill-lbl">3rd Shot</div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:59%"></div></div><div class="skill-score">5.9</div></div>
+      <div class="skill-row"><div class="skill-lbl">Dinking</div><div class="skill-bar-track"><div class="skill-bar-fill" id="skillDinking" style="width:82%"></div></div><div class="skill-score" id="skillDinkingVal">8.2</div></div>
+      <div class="skill-row"><div class="skill-lbl">Serving</div><div class="skill-bar-track"><div class="skill-bar-fill" id="skillServing" style="width:74%"></div></div><div class="skill-score" id="skillServingVal">7.4</div></div>
+      <div class="skill-row"><div class="skill-lbl">Volley</div><div class="skill-bar-track"><div class="skill-bar-fill" id="skillVolley" style="width:68%"></div></div><div class="skill-score" id="skillVolleyVal">6.8</div></div>
+      <div class="skill-row"><div class="skill-lbl">3rd Shot</div><div class="skill-bar-track"><div class="skill-bar-fill" id="skillThird" style="width:59%"></div></div><div class="skill-score" id="skillThirdVal">5.9</div></div>
     </div>
     <div class="settings-group">
       <div class="settings-group-title">PREFERENCES</div>
-      <div class="setting-row"><div class="setting-icon" style="background:#E8F2FF">🏏</div><div class="setting-text"><div class="setting-label">Play Style</div><div class="setting-val">Control / Dinking</div></div><div class="setting-arrow">›</div></div>
-      <div class="setting-row"><div class="setting-icon" style="background:#FFF4E5">📍</div><div class="setting-text"><div class="setting-label">Home Location</div><div class="setting-val">San Diego, CA</div></div><div class="setting-arrow">›</div></div>
+      <div class="setting-row" onclick="openEditProfile()"><div class="setting-icon" style="background:#E8F2FF">🏏</div><div class="setting-text"><div class="setting-label">Play Style</div><div class="setting-val" id="settingPlayStyle">Control / Dinking</div></div><div class="setting-arrow">›</div></div>
+      <div class="setting-row" onclick="openEditProfile()"><div class="setting-icon" style="background:#FFF4E5">📍</div><div class="setting-text"><div class="setting-label">Home Location</div><div class="setting-val" id="settingLocation">San Diego, CA</div></div><div class="setting-arrow">›</div></div>
       <div class="setting-row"><div class="setting-icon" style="background:#E8F8EC">🔔</div><div class="setting-text"><div class="setting-label">Court Notifications</div><div class="setting-val">When low utilization</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
     </div>
     <div class="settings-group">
@@ -618,6 +810,7 @@
   <!-- ══════════════════════════════════════
        TAB BAR
   ══════════════════════════════════════ -->
+
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('home')" id="tab-home">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -644,163 +837,261 @@
   <!-- ══════════════════════════════════════
        BOOKING MODAL (Full Flow)
   ══════════════════════════════════════ -->
+
   <div class="modal-overlay" id="bookingModal">
     <div class="modal-sheet" id="bookingSheet">
       <div class="modal-handle"></div>
       <button class="modal-close" onclick="closeBookingModal()">✕</button>
 
-      <!-- Steps wrapper -->
-      <div id="bookingStepsWrapper">
-        <div class="booking-header">
-          <div class="booking-title" id="bookingCourtTitle">Book a Court</div>
-          <div class="booking-sub" id="bookingCourtSub">Select your date and time</div>
-        </div>
+```
+  <!-- Steps wrapper -->
+  <div id="bookingStepsWrapper">
+    <div class="booking-header">
+      <div class="booking-title" id="bookingCourtTitle">Book a Court</div>
+      <div class="booking-sub" id="bookingCourtSub">Select your date and time</div>
+    </div>
 
-        <!-- Step Indicator -->
-        <div class="step-indicator">
-          <div class="step-dot active" id="sdot0">1</div>
-          <div class="step-line" id="sline0"></div>
-          <div class="step-dot future" id="sdot1">2</div>
-          <div class="step-line" id="sline1"></div>
-          <div class="step-dot future" id="sdot2">3</div>
-          <div class="step-line" id="sline2"></div>
-          <div class="step-dot future" id="sdot3">4</div>
-        </div>
-        <div class="step-labels">
-          <div class="step-lbl active" id="slbl0">Date</div>
-          <div class="step-lbl" id="slbl1">Time</div>
-          <div class="step-lbl" id="slbl2">Court</div>
-          <div class="step-lbl" id="slbl3">Review</div>
-        </div>
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="sdot0">1</div>
+      <div class="step-line" id="sline0"></div>
+      <div class="step-dot future" id="sdot1">2</div>
+      <div class="step-line" id="sline1"></div>
+      <div class="step-dot future" id="sdot2">3</div>
+      <div class="step-line" id="sline2"></div>
+      <div class="step-dot future" id="sdot3">4</div>
+    </div>
+    <div class="step-labels">
+      <div class="step-lbl active" id="slbl0">Date</div>
+      <div class="step-lbl" id="slbl1">Time</div>
+      <div class="step-lbl" id="slbl2">Court</div>
+      <div class="step-lbl" id="slbl3">Review</div>
+    </div>
 
-        <!-- ── STEP 1: Date ── -->
-        <div class="step-panel active" id="step-0">
-          <div style="background:var(--bg);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;">
-            <div class="cal-nav">
-              <button class="cal-arrow" onclick="calNav(-1)">‹</button>
-              <div class="cal-month" id="calMonthLabel"></div>
-              <button class="cal-arrow" onclick="calNav(1)">›</button>
-            </div>
-            <div class="cal-grid" id="calGrid"></div>
-          </div>
-          <div class="option-group">
-            <div class="option-label">DURATION</div>
-            <div class="option-pills" id="durationPills">
-              <div class="option-pill selected" data-dur="60">1 hr</div>
-              <div class="option-pill" data-dur="90">1.5 hr</div>
-              <div class="option-pill" data-dur="120">2 hr</div>
-            </div>
-          </div>
-          <div class="option-group">
-            <div class="option-label">NUMBER OF PLAYERS</div>
-            <div class="option-pills" id="playerPills">
-              <div class="option-pill" data-players="1">1</div>
-              <div class="option-pill selected" data-players="2">2</div>
-              <div class="option-pill" data-players="3">3</div>
-              <div class="option-pill" data-players="4">4</div>
-            </div>
-          </div>
-          <div class="booking-nav">
-            <button class="nav-back" onclick="closeBookingModal()">Cancel</button>
-            <button class="nav-next" id="step0Next" onclick="goStep(1)">Next →</button>
-          </div>
+    <!-- ── STEP 1: Date ── -->
+    <div class="step-panel active" id="step-0">
+      <div style="background:var(--bg);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;">
+        <div class="cal-nav">
+          <button class="cal-arrow" onclick="calNav(-1)">‹</button>
+          <div class="cal-month" id="calMonthLabel"></div>
+          <button class="cal-arrow" onclick="calNav(1)">›</button>
         </div>
-
-        <!-- ── STEP 2: Time Slot ── -->
-        <div class="step-panel" id="step-1">
-          <div class="slots-section">
-            <div class="slots-label">MORNING</div>
-            <div class="slots-grid" id="slotsAM"></div>
-          </div>
-          <div class="slots-section">
-            <div class="slots-label">AFTERNOON</div>
-            <div class="slots-grid" id="slotsPM"></div>
-          </div>
-          <div class="slots-section">
-            <div class="slots-label">EVENING</div>
-            <div class="slots-grid" id="slotsEve"></div>
-          </div>
-          <div class="booking-nav">
-            <button class="nav-back" onclick="goStep(0)">← Back</button>
-            <button class="nav-next" id="step1Next" disabled onclick="goStep(2)">Next →</button>
-          </div>
-        </div>
-
-        <!-- ── STEP 3: Court Selection ── -->
-        <div class="step-panel" id="step-2">
-          <div style="margin-bottom:14px;">
-            <div style="font-size:13px;font-weight:700;color:var(--label4);letter-spacing:.4px;margin-bottom:10px;">AVAILABLE COURTS</div>
-            <div id="courtOptions"></div>
-          </div>
-          <div class="option-group">
-            <div class="option-label">EQUIPMENT RENTAL</div>
-            <div class="option-pills" id="rentalPills">
-              <div class="option-pill selected" data-rental="none">None</div>
-              <div class="option-pill" data-rental="paddle">Paddle (+$5)</div>
-              <div class="option-pill" data-rental="balls">Balls (+$2)</div>
-              <div class="option-pill" data-rental="both">Both (+$7)</div>
-            </div>
-          </div>
-          <div class="booking-nav">
-            <button class="nav-back" onclick="goStep(1)">← Back</button>
-            <button class="nav-next" id="step2Next" disabled onclick="goStep(3)">Next →</button>
-          </div>
-        </div>
-
-        <!-- ── STEP 4: Review & Pay ── -->
-        <div class="step-panel" id="step-3">
-          <div class="summary-card">
-            <div class="summary-banner">
-              <div class="summary-court-name" id="sumCourtName"></div>
-              <div class="summary-court-addr" id="sumCourtAddr"></div>
-            </div>
-            <div class="summary-rows">
-              <div class="summary-row"><span class="sum-lbl">Date</span><span class="sum-val" id="sumDate"></span></div>
-              <div class="summary-row"><span class="sum-lbl">Time</span><span class="sum-val" id="sumTime"></span></div>
-              <div class="summary-row"><span class="sum-lbl">Duration</span><span class="sum-val" id="sumDuration"></span></div>
-              <div class="summary-row"><span class="sum-lbl">Players</span><span class="sum-val" id="sumPlayers"></span></div>
-              <div class="summary-row"><span class="sum-lbl">Court #</span><span class="sum-val" id="sumCourt"></span></div>
-              <div class="summary-row"><span class="sum-lbl">Rental</span><span class="sum-val" id="sumRental"></span></div>
-            </div>
-          </div>
-          <div class="price-breakdown">
-            <div class="price-row"><span>Court fee</span><span id="priceCourtFee">$0</span></div>
-            <div class="price-row"><span>Equipment rental</span><span id="priceRental">$0</span></div>
-            <div class="price-row"><span>Booking fee</span><span>$1.50</span></div>
-            <div class="price-row total"><span>Total</span><span id="priceTotal">$0</span></div>
-          </div>
-          <div class="coupon-row">
-            <input class="coupon-input" id="couponInput" type="text" placeholder="Promo code (try PICKLE10)" />
-            <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
-          </div>
-          <div class="booking-nav">
-            <button class="nav-back" onclick="goStep(2)">← Back</button>
-            <button class="nav-next confirm" onclick="confirmBooking()">✓ Confirm Booking</button>
-          </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <div class="option-group">
+        <div class="option-label">DURATION</div>
+        <div class="option-pills" id="durationPills">
+          <div class="option-pill selected" data-dur="60">1 hr</div>
+          <div class="option-pill" data-dur="90">1.5 hr</div>
+          <div class="option-pill" data-dur="120">2 hr</div>
         </div>
       </div>
+      <div class="option-group">
+        <div class="option-label">NUMBER OF PLAYERS</div>
+        <div class="option-pills" id="playerPills">
+          <div class="option-pill" data-players="1">1</div>
+          <div class="option-pill selected" data-players="2">2</div>
+          <div class="option-pill" data-players="3">3</div>
+          <div class="option-pill" data-players="4">4</div>
+        </div>
+      </div>
+      <div class="booking-nav">
+        <button class="nav-back" onclick="closeBookingModal()">Cancel</button>
+        <button class="nav-next" id="step0Next" disabled onclick="goStep(1)">Next →</button>
+      </div>
+    </div>
 
-      <!-- Success Screen -->
-      <div class="success-screen" id="successScreen">
-        <div class="success-anim">✓</div>
-        <div class="success-title">Court Booked! 🎉</div>
-        <div class="success-sub">Your reservation is confirmed.<br>See you on the court!</div>
-        <div class="success-ref">
-          <div class="success-ref-lbl">BOOKING REFERENCE</div>
-          <div class="success-ref-val" id="successRef"></div>
+    <!-- ── STEP 2: Time Slot ── -->
+    <div class="step-panel" id="step-1">
+      <div class="slots-section">
+        <div class="slots-label">MORNING</div>
+        <div class="slots-grid" id="slotsAM"></div>
+      </div>
+      <div class="slots-section">
+        <div class="slots-label">AFTERNOON</div>
+        <div class="slots-grid" id="slotsPM"></div>
+      </div>
+      <div class="slots-section">
+        <div class="slots-label">EVENING</div>
+        <div class="slots-grid" id="slotsEve"></div>
+      </div>
+      <div class="booking-nav">
+        <button class="nav-back" onclick="goStep(0)">← Back</button>
+        <button class="nav-next" id="step1Next" disabled onclick="goStep(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: Court Selection ── -->
+    <div class="step-panel" id="step-2">
+      <div style="margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:700;color:var(--label4);letter-spacing:.4px;margin-bottom:10px;">AVAILABLE COURTS</div>
+        <div id="courtOptions"></div>
+      </div>
+      <div class="option-group">
+        <div class="option-label">EQUIPMENT RENTAL</div>
+        <div class="option-pills" id="rentalPills">
+          <div class="option-pill selected" data-rental="none">None</div>
+          <div class="option-pill" data-rental="paddle">Paddle (+$5)</div>
+          <div class="option-pill" data-rental="balls">Balls (+$2)</div>
+          <div class="option-pill" data-rental="both">Both (+$7)</div>
         </div>
-        <div class="success-detail" id="successDetail"></div>
-        <div class="success-btns">
-          <button class="suc-btn suc-secondary" onclick="closeBookingModal()">Done</button>
-          <button class="suc-btn suc-primary" onclick="goToBookings()">View Bookings</button>
+      </div>
+      <div class="booking-nav">
+        <button class="nav-back" onclick="goStep(1)">← Back</button>
+        <button class="nav-next" id="step2Next" disabled onclick="goStep(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: Review & Pay ── -->
+    <div class="step-panel" id="step-3">
+      <div class="summary-card">
+        <div class="summary-banner">
+          <div class="summary-court-name" id="sumCourtName"></div>
+          <div class="summary-court-addr" id="sumCourtAddr"></div>
         </div>
+        <div class="summary-rows">
+          <div class="summary-row"><span class="sum-lbl">Date</span><span class="sum-val" id="sumDate"></span></div>
+          <div class="summary-row"><span class="sum-lbl">Time</span><span class="sum-val" id="sumTime"></span></div>
+          <div class="summary-row"><span class="sum-lbl">Duration</span><span class="sum-val" id="sumDuration"></span></div>
+          <div class="summary-row"><span class="sum-lbl">Players</span><span class="sum-val" id="sumPlayers"></span></div>
+          <div class="summary-row"><span class="sum-lbl">Court #</span><span class="sum-val" id="sumCourt"></span></div>
+          <div class="summary-row"><span class="sum-lbl">Rental</span><span class="sum-val" id="sumRental"></span></div>
+        </div>
+      </div>
+      <div class="price-breakdown">
+        <div class="price-row"><span>Court fee</span><span id="priceCourtFee">$0</span></div>
+        <div class="price-row"><span>Equipment rental</span><span id="priceRental">$0</span></div>
+        <div class="price-row"><span>Booking fee</span><span>$1.50</span></div>
+        <div class="price-row total"><span>Total</span><span id="priceTotal">$0</span></div>
+      </div>
+      <div class="coupon-row">
+        <input class="coupon-input" id="couponInput" type="text" placeholder="Promo code (try PICKLE10)" />
+        <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+      </div>
+      <div class="booking-nav">
+        <button class="nav-back" onclick="goStep(2)">← Back</button>
+        <button class="nav-next confirm" onclick="confirmBooking()">✓ Confirm Booking</button>
       </div>
     </div>
   </div>
 
+  <!-- Success Screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-anim">✓</div>
+    <div class="success-title">Court Booked! 🎉</div>
+    <div class="success-sub">Your reservation is confirmed.<br>See you on the court!</div>
+    <div class="success-ref">
+      <div class="success-ref-lbl">BOOKING REFERENCE</div>
+      <div class="success-ref-val" id="successRef"></div>
+    </div>
+    <div class="success-detail" id="successDetail"></div>
+    <div class="success-btns">
+      <button class="suc-btn suc-secondary" onclick="closeBookingModal()">Done</button>
+      <button class="suc-btn suc-primary" onclick="goToBookings()">View Bookings</button>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       EDIT PROFILE MODAL
+  ══════════════════════════════════════ -->
+
+  <div class="edit-profile-overlay" id="editProfileOverlay">
+    <div class="edit-profile-sheet">
+      <div class="ep-header">
+        <div class="ep-title">Edit Profile</div>
+        <button class="ep-close" onclick="closeEditProfile()">✕</button>
+      </div>
+      <div class="ep-avatar-section">
+        <div class="ep-avatar" id="epAvatar">
+          JP
+          <div class="ep-avatar-badge">📷</div>
+        </div>
+        <div class="ep-avatar-hint">Tap to change photo</div>
+      </div>
+      <div class="ep-body">
+        <div class="ep-field">
+          <div class="ep-label">DISPLAY NAME</div>
+          <input class="ep-input" id="epName" type="text" value="Jamie Pickle" />
+        </div>
+        <div class="ep-field">
+          <div class="ep-label">HOME LOCATION</div>
+          <input class="ep-input" id="epLocation" type="text" value="San Diego, CA" />
+        </div>
+        <div class="ep-field">
+          <div class="ep-label">SKILL LEVEL</div>
+          <div class="ep-select-wrap">
+            <select class="ep-select" id="epLevel">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate" selected>Intermediate</option>
+              <option value="Advanced">Advanced</option>
+              <option value="Pro">Pro</option>
+            </select>
+            <span class="ep-select-arrow">›</span>
+          </div>
+        </div>
+        <div class="ep-field">
+          <div class="ep-label">PLAY STYLE</div>
+          <div class="ep-select-wrap">
+            <select class="ep-select" id="epPlayStyle">
+              <option value="Control / Dinking" selected>Control / Dinking</option>
+              <option value="Power / Banging">Power / Banging</option>
+              <option value="All-Around">All-Around</option>
+              <option value="Serve & Volley">Serve & Volley</option>
+            </select>
+            <span class="ep-select-arrow">›</span>
+          </div>
+        </div>
+        <div class="ep-divider"></div>
+        <div class="ep-field">
+          <div class="ep-label">DUPR RATING</div>
+          <div class="ep-dupr-row">
+            <input class="ep-dupr-input" id="epDupr" type="number" step="0.1" min="1.0" max="6.0" value="3.8" />
+            <div class="ep-dupr-badge">DUPR Score</div>
+          </div>
+        </div>
+        <div class="ep-divider"></div>
+        <div class="ep-field">
+          <div class="ep-label">SKILL BREAKDOWN</div>
+          <div class="ep-skills-section">
+            <div class="ep-skill-row">
+              <div class="ep-skill-lbl">Dinking</div>
+              <input class="ep-skill-slider" id="sliderDinking" type="range" min="1" max="10" step="0.1" value="8.2" oninput="updateSliderVal('Dinking',this.value)" />
+              <div class="ep-skill-val" id="sliderDinkingVal">8.2</div>
+            </div>
+            <div class="ep-skill-row">
+              <div class="ep-skill-lbl">Serving</div>
+              <input class="ep-skill-slider" id="sliderServing" type="range" min="1" max="10" step="0.1" value="7.4" oninput="updateSliderVal('Serving',this.value)" />
+              <div class="ep-skill-val" id="sliderServingVal">7.4</div>
+            </div>
+            <div class="ep-skill-row">
+              <div class="ep-skill-lbl">Volley</div>
+              <input class="ep-skill-slider" id="sliderVolley" type="range" min="1" max="10" step="0.1" value="6.8" oninput="updateSliderVal('Volley',this.value)" />
+              <div class="ep-skill-val" id="sliderVolleyVal">6.8</div>
+            </div>
+            <div class="ep-skill-row">
+              <div class="ep-skill-lbl">3rd Shot</div>
+              <input class="ep-skill-slider" id="sliderThird" type="range" min="1" max="10" step="0.1" value="5.9" oninput="updateSliderVal('Third',this.value)" />
+              <div class="ep-skill-val" id="sliderThirdVal">5.9</div>
+            </div>
+          </div>
+        </div>
+        <button class="ep-save-btn" onclick="saveProfile()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+
+  <div class="toast" id="toast"></div>
+
 </div><!-- /app -->
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
 /* ═══════════════════════════════════════
    DATA
@@ -826,13 +1117,19 @@ const COURTS = [
   { id:7, name:'Sunset Cliffs Pickle Club',       addr:'4030 Orchard Ave, San Diego, CA',        lat:32.726, lng:-117.258, rating:4.7, reviews:201, courts:5, avail:5, surface:'Concrete', lighting:true, util:'low', utilPct:10, pricePerHr:14 },
 ];
 
-// Seeded bookings
 let bookings = [
   { id:'PKL-4821', courtId:1, courtName:'Balboa Park Pickleball Complex', courtAddr:'2000 Pan American Rd, San Diego, CA', date:'2026-03-12', time:'10:00 AM', duration:60, players:2, courtNum:'Court 3', rental:'None', total:13.50, status:'confirmed' },
   { id:'PKL-3190', courtId:4, courtName:'Robb Field Athletic Area', courtAddr:'2525 Bacon St, San Diego, CA', date:'2026-03-15', time:'2:00 PM', duration:90, players:4, courtNum:'Court 1', rental:'Balls', total:20.50, status:'confirmed' },
   { id:'PKL-2047', courtId:2, courtName:'Morley Field Sports Complex', courtAddr:'2221 Morley Field Dr, San Diego, CA', date:'2026-02-22', time:'9:00 AM', duration:60, players:2, courtNum:'Court 5', rental:'None', total:11.50, status:'completed' },
   { id:'PKL-1883', courtId:6, courtName:'Chollas Lake Park Courts', courtAddr:'6350 Chollas Pkwy, San Diego, CA', date:'2026-02-10', time:'4:00 PM', duration:60, players:2, courtNum:'Court 2', rental:'None', total:11.50, status:'cancelled' },
 ];
+
+/* Profile state */
+let profileData = {
+  name: 'Jamie Pickle', initials: 'JP', location: 'San Diego, CA',
+  level: 'Intermediate', playStyle: 'Control / Dinking', dupr: '3.8',
+  skills: { dinking: 8.2, serving: 7.4, volley: 6.8, third: 5.9 }
+};
 
 /* ═══════════════════════════════════════
    BOOKING STATE
@@ -842,8 +1139,17 @@ let bookingState = {
   duration: 60, players: 2, timeSlot: null,
   courtNum: null, rental: 'none', couponApplied: false
 };
-
 let calYear, calMonth;
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function showToast(msg, duration=2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
 
 /* ═══════════════════════════════════════
    TABS
@@ -960,30 +1266,73 @@ function removePaddle(e, id) {
 function openCompareModal() {
   if (selectedPaddles.length < 2) return;
   const [a, b] = selectedPaddles.map(id => PADDLES.find(p=>p.id===id));
-  const rows = [
-    {label:'Price',va:a.price,vb:b.price},{label:'Material',va:a.material,vb:b.material},
-    {label:'Type',va:a.type,vb:b.type},{label:'Size',va:a.size,vb:b.size},
-    {label:'Weight',va:a.weight,vb:b.weight},{label:'Thickness',va:a.thickness,vb:b.thickness},
-    {label:'Grip',va:a.grip,vb:b.grip},{label:'Core',va:a.core,vb:b.core},{label:'Level',va:a.level,vb:b.level}
+
+  // Sticky header with paddle names
+  document.getElementById('cmpHeads').innerHTML = `
+    <div></div>
+    <div class="cmp-head-cell">
+      <span class="cmp-head-emoji">${a.emoji}</span>
+      <div class="cmp-head-name">${a.name.split(' ').slice(0,3).join(' ')}</div>
+      <div class="cmp-head-price">${a.price}</div>
+    </div>
+    <div class="cmp-head-cell">
+      <span class="cmp-head-emoji">${b.emoji}</span>
+      <div class="cmp-head-name">${b.name.split(' ').slice(0,3).join(' ')}</div>
+      <div class="cmp-head-price">${b.price}</div>
+    </div>`;
+
+  // Specs rows
+  const specs = [
+    {label:'Material',va:a.material,vb:b.material},
+    {label:'Type',va:a.type,vb:b.type},
+    {label:'Size',va:a.size,vb:b.size},
+    {label:'Weight',va:a.weight,vb:b.weight},
+    {label:'Thickness',va:a.thickness,vb:b.thickness},
+    {label:'Grip',va:a.grip,vb:b.grip},
+    {label:'Core',va:a.core,vb:b.core},
+    {label:'Level',va:a.level,vb:b.level},
   ];
+
+  // Determine overall winner by attribute total
+  const attrs = ['power','control','spin','touch','reach'];
+  const totalA = attrs.reduce((s,k)=>s+a[k],0);
+  const totalB = attrs.reduce((s,k)=>s+b[k],0);
+  const winner = totalA >= totalB ? a : b;
+  const winnerAdv = Math.abs(totalA-totalB);
+
   document.getElementById('compareTable').innerHTML = `
-    <div class="ct-header"><div></div><div class="ct-head">${a.emoji} ${a.name.split(' ').slice(0,2).join(' ')}</div><div class="ct-head">${b.emoji} ${b.name.split(' ').slice(0,2).join(' ')}</div></div>
-    ${rows.map(r=>`<div class="ct-row"><div class="ct-attr">${r.label}</div><div class="ct-val">${r.va}</div><div class="ct-val">${r.vb}</div></div>`).join('')}
-    <div style="height:10px"></div>
-    ${['power','control','spin','touch','reach'].map(attr=>`
-    <div class="ct-row">
-      <div class="ct-attr">${attr.charAt(0).toUpperCase()+attr.slice(1)}</div>
-      <div class="ct-bar-wrap ${a[attr]>b[attr]?'best':a[attr]<b[attr]?'worst':''}">
-        <div style="font-size:13px;font-weight:700">${a[attr]}</div>
-        <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${a[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
+    <div class="cmp-section-title">SPECS</div>
+    ${specs.map(r=>`
+    <div class="cmp-row">
+      <div class="cmp-attr">${r.label}</div>
+      <div class="cmp-val">${r.va}</div>
+      <div class="cmp-val">${r.vb}</div>
+    </div>`).join('')}
+
+    <div class="cmp-section-title" style="margin-top:8px">PERFORMANCE</div>
+    ${attrs.map(attr=>`
+    <div class="cmp-row">
+      <div class="cmp-attr">${attr.charAt(0).toUpperCase()+attr.slice(1)}</div>
+      <div class="cmp-bar-cell ${a[attr]>b[attr]?'best':a[attr]<b[attr]?'worst':''}">
+        <div class="cmp-bar-num">${a[attr]}</div>
+        <div class="cmp-bar-track"><div class="cmp-bar-fill" style="width:${a[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
       </div>
-      <div class="ct-bar-wrap ${b[attr]>a[attr]?'best':b[attr]<a[attr]?'worst':''}">
-        <div style="font-size:13px;font-weight:700">${b[attr]}</div>
-        <div class="ct-bar-track"><div class="ct-bar-fill" style="width:${b[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
+      <div class="cmp-bar-cell ${b[attr]>a[attr]?'best':b[attr]<a[attr]?'worst':''}">
+        <div class="cmp-bar-num">${b[attr]}</div>
+        <div class="cmp-bar-track"><div class="cmp-bar-fill" style="width:${b[attr]}%;background:${BAR_COLORS[attr]}"></div></div>
       </div>
     </div>`).join('')}
+
+    <div class="cmp-winner-banner">
+      <div class="cmp-winner-label">🏆 OVERALL WINNER</div>
+      <div class="cmp-winner-name">${winner.name}</div>
+      <div class="cmp-winner-sub">Leads by ${winnerAdv} performance points · ${winner.price}</div>
+    </div>
     <div style="height:16px"></div>`;
+
   document.getElementById('compareModalOverlay').classList.add('open');
+  // Scroll modal back to top
+  setTimeout(()=>{ document.getElementById('compareModalSheet').scrollTop=0; }, 50);
 }
 
 function closeCompareModal() { document.getElementById('compareModalOverlay').classList.remove('open'); }
@@ -1017,10 +1366,17 @@ function initMap() {
       .bindPopup(`<b>${c.name}</b><br><small style="color:#636366">${c.util.toUpperCase()} utilization · ${c.courts} courts</small>`);
     m.on('click', () => openCourt(c));
   });
+  // Clicking the map background closes the court panel
+  map.on('click', () => {
+    if (document.getElementById('courtPanel').classList.contains('open')) closeCourt();
+  });
 }
 
 function openCourt(court) {
   currentCourt = court;
+  // Hide overview card
+  document.getElementById('mapOverviewCard').classList.add('hidden');
+
   document.getElementById('pName').textContent    = court.name;
   document.getElementById('pAddr').textContent    = court.addr;
   document.getElementById('pRating').textContent  = court.rating;
@@ -1039,7 +1395,10 @@ function openCourt(court) {
   document.getElementById('courtPanel').classList.add('open');
 }
 
-function closeCourt() { document.getElementById('courtPanel').classList.remove('open'); }
+function closeCourt() {
+  document.getElementById('courtPanel').classList.remove('open');
+  document.getElementById('mapOverviewCard').classList.remove('hidden');
+}
 
 function buildHeatmap(court) {
   const days=['Mo','Tu','We','Th','Fr','Sa','Su'];
@@ -1072,8 +1431,8 @@ function searchLocation() {
   fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`)
     .then(r=>r.json()).then(data => {
       if (data.length) map.flyTo([parseFloat(data[0].lat),parseFloat(data[0].lon)],13,{duration:1.2});
-      else alert('Location not found.');
-    }).catch(()=>alert('Search failed.'));
+      else showToast('Location not found.');
+    }).catch(()=>showToast('Search failed.'));
 }
 document.getElementById('searchInput').addEventListener('keydown',e=>{ if(e.key==='Enter') searchLocation(); });
 
@@ -1111,7 +1470,6 @@ function resetBookingUI() {
   document.getElementById('bookingStepsWrapper').style.display='block';
   document.getElementById('successScreen').classList.remove('show');
   goStep(0, true);
-  // Reset option pills
   document.querySelectorAll('#durationPills .option-pill').forEach((p,i)=>{ p.classList.toggle('selected',i===0); });
   document.querySelectorAll('#playerPills .option-pill').forEach((p,i)=>{ p.classList.toggle('selected',i===1); });
   document.querySelectorAll('#rentalPills .option-pill').forEach((p,i)=>{ p.classList.toggle('selected',i===0); });
@@ -1126,11 +1484,8 @@ function resetBookingUI() {
    BOOKING STEPS
 ═══════════════════════════════════════ */
 function goStep(n, silent=false) {
-  const prev = bookingState.step;
   bookingState.step = n;
   document.querySelectorAll('.step-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
-
-  // Update step indicator
   for (let i=0;i<4;i++){
     const dot  = document.getElementById('sdot'+i);
     const lbl  = document.getElementById('slbl'+i);
@@ -1144,7 +1499,6 @@ function goStep(n, silent=false) {
   }
   if (n===1 && !silent) generateTimeSlots();
   if (n===3 && !silent) buildSummary();
-  // Scroll modal to top
   document.getElementById('bookingSheet').scrollTop=0;
 }
 
@@ -1195,7 +1549,6 @@ function renderCal() {
   }
 }
 
-// Duration pills
 document.getElementById('durationPills').addEventListener('click',e=>{
   const pill=e.target.closest('.option-pill');
   if(!pill)return;
@@ -1204,7 +1557,6 @@ document.getElementById('durationPills').addEventListener('click',e=>{
   bookingState.duration=parseInt(pill.dataset.dur);
 });
 
-// Player pills
 document.getElementById('playerPills').addEventListener('click',e=>{
   const pill=e.target.closest('.option-pill');
   if(!pill)return;
@@ -1213,7 +1565,6 @@ document.getElementById('playerPills').addEventListener('click',e=>{
   bookingState.players=parseInt(pill.dataset.players);
 });
 
-// Rental pills
 document.getElementById('rentalPills').addEventListener('click',e=>{
   const pill=e.target.closest('.option-pill');
   if(!pill)return;
@@ -1299,10 +1650,11 @@ function applyCoupon(){
     buildSummary();
     document.getElementById('couponInput').style.borderColor='var(--green)';
     document.getElementById('couponInput').value='PICKLE10 — 10% off applied! ✓';
+    showToast('🎉 Promo code applied — 10% off!');
   } else if(!val){
-    alert('Please enter a promo code.');
+    showToast('Please enter a promo code.');
   } else {
-    alert('Invalid or already used promo code.');
+    showToast('Invalid or already used promo code.');
   }
 }
 
@@ -1326,7 +1678,6 @@ function confirmBooking(){
   };
   bookings.unshift(newBooking);
 
-  // Show success
   document.getElementById('bookingStepsWrapper').style.display='none';
   document.getElementById('successRef').textContent=ref;
   document.getElementById('successDetail').innerHTML=`
@@ -1353,7 +1704,6 @@ function switchBookingTab(tab, btn){
 
 function renderBookingsList(tab){
   const el=document.getElementById('bookingsList');
-  const today=new Date(); today.setHours(0,0,0,0);
   let list;
   if(tab==='upcoming')   list=bookings.filter(b=>b.status==='confirmed');
   else if(tab==='past')  list=bookings.filter(b=>b.status==='completed');
@@ -1387,13 +1737,13 @@ function renderBookingsList(tab){
 function viewBookingDetail(id){
   const bk=bookings.find(b=>b.id===id);
   if(!bk)return;
-  alert(`📋 Booking ${bk.id}\n\n🏟 ${bk.courtName}\n📅 ${formatDateDisplay(bk.date)} at ${bk.time}\n⏱ ${bk.duration>=60?(bk.duration/60)+' hour(s)':bk.duration+' min'}\n👥 ${bk.players} player(s)\n🏓 ${bk.courtNum}\n🎒 Rental: ${bk.rental}\n💰 Total: $${bk.total.toFixed(2)}\n✅ Status: ${bk.status}`);
+  showToast(`${bk.id} · ${formatDateDisplay(bk.date)} · ${bk.time}`);
 }
 
 function cancelBooking(id){
   if(!confirm('Cancel this booking? This cannot be undone.'))return;
   const bk=bookings.find(b=>b.id===id);
-  if(bk){ bk.status='cancelled'; renderBookingsList('upcoming'); renderHomeUpcoming(); }
+  if(bk){ bk.status='cancelled'; renderBookingsList('upcoming'); renderHomeUpcoming(); showToast('Booking cancelled.'); }
 }
 
 function rescheduleBooking(id){
@@ -1409,11 +1759,89 @@ function rebookCourt(courtId){
 }
 
 /* ═══════════════════════════════════════
+   EDIT PROFILE
+═══════════════════════════════════════ */
+function openEditProfile() {
+  // Populate fields with current profile data
+  document.getElementById('epName').value = profileData.name;
+  document.getElementById('epLocation').value = profileData.location;
+  document.getElementById('epLevel').value = profileData.level;
+  document.getElementById('epPlayStyle').value = profileData.playStyle;
+  document.getElementById('epDupr').value = profileData.dupr;
+  document.getElementById('sliderDinking').value = profileData.skills.dinking;
+  document.getElementById('sliderDinkingVal').textContent = profileData.skills.dinking;
+  document.getElementById('sliderServing').value = profileData.skills.serving;
+  document.getElementById('sliderServingVal').textContent = profileData.skills.serving;
+  document.getElementById('sliderVolley').value = profileData.skills.volley;
+  document.getElementById('sliderVolleyVal').textContent = profileData.skills.volley;
+  document.getElementById('sliderThird').value = profileData.skills.third;
+  document.getElementById('sliderThirdVal').textContent = profileData.skills.third;
+
+  document.getElementById('editProfileOverlay').classList.add('open');
+}
+
+function closeEditProfile() {
+  document.getElementById('editProfileOverlay').classList.remove('open');
+}
+
+function updateSliderVal(skill, val) {
+  const rounded = parseFloat(val).toFixed(1);
+  document.getElementById('slider'+skill+'Val').textContent = rounded;
+}
+
+function saveProfile() {
+  const name    = document.getElementById('epName').value.trim() || 'Player';
+  const loc     = document.getElementById('epLocation').value.trim();
+  const level   = document.getElementById('epLevel').value;
+  const style   = document.getElementById('epPlayStyle').value;
+  const dupr    = parseFloat(document.getElementById('epDupr').value).toFixed(1);
+  const dinking = parseFloat(document.getElementById('sliderDinking').value).toFixed(1);
+  const serving = parseFloat(document.getElementById('sliderServing').value).toFixed(1);
+  const volley  = parseFloat(document.getElementById('sliderVolley').value).toFixed(1);
+  const third   = parseFloat(document.getElementById('sliderThird').value).toFixed(1);
+
+  // Derive initials (up to 2 chars)
+  const parts = name.trim().split(' ');
+  const initials = (parts[0][0] + (parts[1]?parts[1][0]:'')).toUpperCase();
+
+  // Update state
+  profileData = { name, initials, location:loc, level, playStyle:style, dupr,
+    skills:{ dinking:parseFloat(dinking), serving:parseFloat(serving), volley:parseFloat(volley), third:parseFloat(third) }};
+
+  // Update profile screen
+  document.getElementById('profileName').textContent  = name;
+  document.getElementById('profileLevel').textContent = `⭐ ${level} · DUPR ${dupr}`;
+  document.getElementById('profileAvatar').textContent= initials;
+  document.getElementById('epAvatar').textContent     = initials;
+  // Re-add the camera badge (textContent wipes children)
+  document.getElementById('epAvatar').innerHTML = initials + '<div class="ep-avatar-badge">📷</div>';
+  document.getElementById('settingPlayStyle').textContent = style;
+  document.getElementById('settingLocation').textContent  = loc;
+  document.getElementById('homeDupr').textContent         = dupr;
+
+  // Update skill bars
+  const skillMap = [
+    {key:'dinking', barId:'skillDinking', valId:'skillDinkingVal', val:dinking},
+    {key:'serving', barId:'skillServing', valId:'skillServingVal', val:serving},
+    {key:'volley',  barId:'skillVolley',  valId:'skillVolleyVal',  val:volley},
+    {key:'third',   barId:'skillThird',   valId:'skillThirdVal',   val:third},
+  ];
+  skillMap.forEach(s=>{
+    document.getElementById(s.barId).style.width = (parseFloat(s.val)*10)+'%';
+    document.getElementById(s.valId).textContent = s.val;
+  });
+
+  closeEditProfile();
+  showToast('✅ Profile saved!');
+}
+
+/* ═══════════════════════════════════════
    INIT
 ═══════════════════════════════════════ */
 renderPaddles();
 renderHomeUpcoming();
 renderBookingsList('upcoming');
 </script>
+
 </body>
 </html>
